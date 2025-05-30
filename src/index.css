@@ -1,7 +1,183 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 
 @custom-variant dark (&:is(.dark *));
+
+/* Solana-themed custom styles */
+body {
+  background: linear-gradient(to bottom, #331254, #190a29);
+  color: #fff;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Add subtle radial overlay for depth */
+body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top center, rgba(139, 92, 246, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Font utilities */
+.font-audiowide {
+  font-family: 'Audiowide', cursive;
+  letter-spacing: 0.02em;
+}
+
+.logo-text {
+  font-family: 'Audiowide', cursive;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 8px rgba(104, 255, 200, 0.4);
+}
+
+/* Global text brightness enhancement */
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.01em;
+}
+
+/* Improved contrast for gray text */
+.text-gray-100 {
+  --tw-text-opacity: 1;
+  color: rgba(243, 244, 246, var(--tw-text-opacity));
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.01em;
+}
+
+/* Make headings more prominent */
+h1, h2, h3, h4, h5, h6 {
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.25);
+  font-weight: 600; 
+}
+
+/* Enhance card elements for better contrast */
+.card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(31, 31, 40, 0.7), rgba(20, 20, 30, 0.9));
+  border: 1px solid rgba(104, 255, 200, 0.1);
+  border-radius: 0.75rem;
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(104, 255, 200, 0.1);
+  transform: translateY(-2px);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(104, 255, 200, 0.03) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* Button text enhancement */
+button, .btn {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover, .btn:hover {
+  box-shadow: 0 0 0 1px rgba(104, 255, 200, 0.3), 0 0 10px rgba(104, 255, 200, 0.2);
+  transform: translateY(-1px);
+}
+
+button::after, .btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 300%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(30deg);
+  transition: all 0.6s ease;
+}
+
+button:hover::after, .btn:hover::after {
+  left: 100%;
+}
+
+/* Solana coin glow effect */
+.solana-coin-glow {
+  filter: drop-shadow(0 0 8px rgba(104, 255, 200, 0.3));
+  transition: all 0.3s ease;
+}
+
+.solana-coin-glow:hover {
+  filter: drop-shadow(0 0 12px rgba(104, 255, 200, 0.5));
+  transform: scale(1.05);
+}
+
+/* RaffleCard hover enhancement */
+.raffle-card {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: linear-gradient(to bottom, rgba(31, 31, 40, 0.7), rgba(20, 20, 30, 0.9));
+  border: 1px solid rgba(104, 255, 200, 0.1);
+}
+
+.raffle-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 1px rgba(104, 255, 200, 0.2), 0 0 15px rgba(104, 255, 200, 0.1);
+}
+
+/* Glowing text effect */
+.glow-text {
+  text-shadow: 0 0 4px rgba(104, 255, 200, 0.4);
+}
+
+/* Solana themed colors */
+.text-solana-green {
+  color: #14F195;
+}
+
+.text-solana-purple {
+  color: #9945FF;
+}
+
+/* Slow pulse animation for important elements */
+@keyframes pulseSlow {
+  0% {
+    opacity: 0.97;
+    box-shadow: 0 0 10px rgba(104, 255, 200, 0.1);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(104, 255, 200, 0.2);
+  }
+  100% {
+    opacity: 0.97;
+    box-shadow: 0 0 10px rgba(104, 255, 200, 0.1);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 6s infinite;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

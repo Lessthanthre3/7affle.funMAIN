@@ -6,7 +6,13 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-basic = "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H"
+basic = "GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE"
+
+[programs.devnet]
+basic = "GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE"
+
+[programs.mainnet]
+basic = "GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE"
 
 [registry]
 url = "https://api.apr.dev"

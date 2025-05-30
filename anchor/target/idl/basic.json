@@ -1,5 +1,5 @@
 {
-  "address": "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H",
+  "address": "GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE",
   "metadata": {
     "name": "basic",
     "version": "0.1.0",
@@ -8,10 +8,705 @@
   },
   "instructions": [
     {
-      "name": "greet",
-      "discriminator": [203, 194, 3, 150, 228, 58, 181, 62],
-      "accounts": [],
+      "name": "buy_ticket",
+      "discriminator": [
+        11,
+        24,
+        17,
+        193,
+        168,
+        116,
+        164,
+        169
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "ticket",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  99,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "raffle"
+              },
+              {
+                "kind": "account",
+                "path": "raffle.total_tickets",
+                "account": "Raffle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_stats",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  115,
+                  116,
+                  97,
+                  116,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
       "args": []
+    },
+    {
+      "name": "cancel_raffle",
+      "discriminator": [
+        135,
+        191,
+        223,
+        141,
+        192,
+        186,
+        234,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_prize",
+      "discriminator": [
+        157,
+        233,
+        139,
+        121,
+        246,
+        62,
+        234,
+        235
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "winner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "winning_ticket"
+        },
+        {
+          "name": "authority",
+          "writable": true
+        },
+        {
+          "name": "raffle_history",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "draw_winner",
+      "discriminator": [
+        250,
+        103,
+        118,
+        147,
+        219,
+        235,
+        169,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_program_counter",
+      "discriminator": [
+        130,
+        106,
+        236,
+        61,
+        114,
+        11,
+        131,
+        153
+      ],
+      "accounts": [
+        {
+          "name": "program_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109,
+                  45,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_raffle",
+      "discriminator": [
+        110,
+        142,
+        92,
+        16,
+        15,
+        58,
+        89,
+        229
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109,
+                  45,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "ticket_price",
+          "type": "u64"
+        },
+        {
+          "name": "duration_hours",
+          "type": "u64"
+        },
+        {
+          "name": "max_tickets",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "initialize_user_stats",
+      "discriminator": [
+        254,
+        243,
+        72,
+        98,
+        251,
+        130,
+        168,
+        213
+      ],
+      "accounts": [
+        {
+          "name": "user_stats",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  115,
+                  116,
+                  97,
+                  116,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "ProgramCounter",
+      "discriminator": [
+        212,
+        226,
+        197,
+        246,
+        246,
+        105,
+        155,
+        107
+      ]
+    },
+    {
+      "name": "Raffle",
+      "discriminator": [
+        143,
+        133,
+        63,
+        173,
+        138,
+        10,
+        142,
+        200
+      ]
+    },
+    {
+      "name": "RaffleHistory",
+      "discriminator": [
+        71,
+        168,
+        4,
+        190,
+        82,
+        101,
+        40,
+        226
+      ]
+    },
+    {
+      "name": "Ticket",
+      "discriminator": [
+        41,
+        228,
+        24,
+        165,
+        78,
+        90,
+        235,
+        200
+      ]
+    },
+    {
+      "name": "UserStats",
+      "discriminator": [
+        176,
+        223,
+        136,
+        27,
+        122,
+        79,
+        32,
+        227
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "RaffleNotActive",
+      "msg": "The raffle is not active"
+    },
+    {
+      "code": 6001,
+      "name": "RaffleEnded",
+      "msg": "The raffle has already ended"
+    },
+    {
+      "code": 6002,
+      "name": "RaffleFull",
+      "msg": "The raffle is full"
+    },
+    {
+      "code": 6003,
+      "name": "UnauthorizedAccess",
+      "msg": "Unauthorized access"
+    },
+    {
+      "code": 6004,
+      "name": "RaffleNotEnded",
+      "msg": "The raffle has not ended yet"
+    },
+    {
+      "code": 6005,
+      "name": "NoTicketsSold",
+      "msg": "No tickets have been sold"
+    },
+    {
+      "code": 6006,
+      "name": "NoWinnerDrawn",
+      "msg": "No winner has been drawn"
+    },
+    {
+      "code": 6007,
+      "name": "NotWinningTicket",
+      "msg": "This is not the winning ticket"
+    },
+    {
+      "code": 6008,
+      "name": "NotTicketOwner",
+      "msg": "You are not the owner of this ticket"
+    },
+    {
+      "code": 6009,
+      "name": "CannotCancelActive",
+      "msg": "Cannot cancel a raffle with active tickets"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidDuration",
+      "msg": "Invalid duration for raffle"
+    },
+    {
+      "code": 6011,
+      "name": "DurationTooLong",
+      "msg": "Duration too long, maximum is 30 days"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidTicketCount",
+      "msg": "Invalid ticket count"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidTicketPrice",
+      "msg": "Invalid ticket price"
+    },
+    {
+      "code": 6014,
+      "name": "NoAvailableTickets",
+      "msg": "No available ticket numbers"
+    },
+    {
+      "code": 6015,
+      "name": "TooManyTickets",
+      "msg": "Too many tickets for a single raffle"
+    },
+    {
+      "code": 6016,
+      "name": "CannotUpdatePrice",
+      "msg": "Cannot update ticket price after tickets have been sold"
+    },
+    {
+      "code": 6017,
+      "name": "AlreadyDistributed",
+      "msg": "Prizes have already been distributed for this period"
+    },
+    {
+      "code": 6018,
+      "name": "InvalidPrizeAmount",
+      "msg": "Invalid prize amount"
+    }
+  ],
+  "types": [
+    {
+      "name": "ProgramCounter",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "raffle_count",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Raffle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "ticket_price",
+            "type": "u64"
+          },
+          {
+            "name": "start_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "max_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "total_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "winner",
+            "type": {
+              "option": "u32"
+            }
+          },
+          {
+            "name": "raffle_id",
+            "type": "string"
+          },
+          {
+            "name": "used_numbers",
+            "type": "bytes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RaffleHistory",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "raffle_id",
+            "type": "string"
+          },
+          {
+            "name": "raffle_name",
+            "type": "string"
+          },
+          {
+            "name": "creation_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "total_tickets_sold",
+            "type": "u32"
+          },
+          {
+            "name": "max_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "final_prize_amount",
+            "type": "u64"
+          },
+          {
+            "name": "winner_ticket",
+            "type": "u32"
+          },
+          {
+            "name": "winner_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "claim_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "transaction_signature",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Ticket",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "raffle",
+            "type": "pubkey"
+          },
+          {
+            "name": "ticket_number",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_tickets_purchased",
+            "type": "u32"
+          },
+          {
+            "name": "weekly_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "monthly_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "current_week",
+            "type": "u32"
+          },
+          {
+            "name": "current_month",
+            "type": "u32"
+          }
+        ]
+      }
     }
   ]
 }

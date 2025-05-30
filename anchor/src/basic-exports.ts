@@ -21,9 +21,12 @@ export function getBasicProgramId(cluster: Cluster) {
     case 'devnet':
     case 'testnet':
       // This is the program ID for the Basic program on devnet and testnet.
-      return new PublicKey('6z68wfurCMYkZG51s1Et9BJEd9nJGUusjHXNt4dGbNNF')
+      return new PublicKey('GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE')
     case 'mainnet-beta':
-    default:
       return BASIC_PROGRAM_ID
+    default:
+      // For localhost/localnet, always use the deployed program ID
+      // This matches the ID from your custom mined keypair
+      return new PublicKey('GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE')
   }
 }
