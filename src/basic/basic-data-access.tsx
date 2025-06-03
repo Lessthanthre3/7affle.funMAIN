@@ -259,7 +259,18 @@ export function useBasicProgram() {
         programId
       )
 
+      // Calculate participant flag PDA - derived from raffle address and buyer address
+      const [participantFlagPDA, bump] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from('participant'),
+          raffleAddress.toBuffer(),
+          publicKey.toBuffer()
+        ],
+        programId
+      )
+
       console.log('Ticket PDA:', ticketPDA.toString())
+      console.log('Participant Flag PDA:', participantFlagPDA.toString(), 'with bump:', bump)
       console.log('Ticket price:', raffle.ticketPrice.toString(), 'lamports')
       
       // Use raw object with string keys to bypass TypeScript restrictions
@@ -268,11 +279,12 @@ export function useBasicProgram() {
         raffle: raffleAddress,
         buyer: publicKey,
         ticket: ticketPDA,
+        participantFlag: participantFlagPDA,
         systemProgram: SystemProgram.programId
       }
 
       const tx = await program.methods
-        .buyTicket()
+        .buyTicket(bump)
         .accounts(accounts)
         .rpc()
 
@@ -711,7 +723,8 @@ export function useBasicProgram() {
             winnerAddress,
             isActive: raffle.isActive && (now < endTimestamp),
             raffleId: raffleId,
-            prizeClaimed: prizeClaimed
+            prizeClaimed: prizeClaimed,
+            uniqueEntrants: raffle.uniqueEntrants || 0
           } as RaffleData
         })
         
@@ -853,14 +866,15 @@ export function useBasicProgram() {
         
         console.log('User stats PDA:', userStatsPda.toString())
         
-        // Call the initialize_user_stats instruction
-        // @ts-ignore - Method exists in the contract but not in the TypeScript definitions
+        // Call the initialize_user_stats instruction with required accounts
+        // This is the simpler version without reflection functionality
         const tx = await program.methods
           .initializeUserStats()
+          // @ts-ignore - Account structure may differ from IDL-generated types
           .accounts({
-            userStats: userStatsPda,
+            user_stats: userStatsPda,
             user: publicKey,
-            systemProgram: SystemProgram.programId,
+            system_program: SystemProgram.programId,
           })
           .rpc()
           

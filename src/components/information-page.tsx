@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 export function InformationPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-center">
       {/* Introduction */}
       <Card className="bg-gradient-to-r from-purple-900 to-purple-800 rounded-lg border-none shadow-xl">
         <CardHeader>
@@ -13,7 +13,7 @@ export function InformationPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-white">
+          <p className="text-white text-center">
             7affle.fun provides a fair, transparent, and fun way to participate in raffles using the Solana blockchain. 
             Our platform ensures complete randomness in winner selection and distributes prizes automatically through smart contracts.
           </p>
@@ -39,7 +39,7 @@ export function InformationPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-white">Browse Raffles</h3>
               </div>
-              <p className="text-gray-300">Explore active raffles on the platform. Each raffle shows the prize, ticket price, and time remaining.</p>
+              <p className="text-gray-300 text-center">Explore active raffles on the platform. Each raffle shows the prize, ticket price, and time remaining.</p>
             </div>
             
             <div className="bg-purple-900/20 p-5 rounded-lg border border-purple-500/20">
@@ -49,7 +49,7 @@ export function InformationPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-white">Buy Tickets</h3>
               </div>
-              <p className="text-gray-300">Purchase tickets for the raffles you're interested in. Each ticket gives you a chance to win the prize.</p>
+              <p className="text-gray-300 text-center">Purchase tickets for the raffles you're interested in. Each ticket gives you a chance to win the prize.</p>
             </div>
             
             <div className="bg-purple-900/20 p-5 rounded-lg border border-purple-500/20">
@@ -59,7 +59,7 @@ export function InformationPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-white">Win Prizes</h3>
               </div>
-              <p className="text-gray-300">When a raffle ends, a winner is randomly selected from all ticket holders. Winners must claim their prizes via the "My Tickets" tab.</p>
+              <p className="text-gray-300 text-center">When a raffle ends, a winner is randomly selected from all ticket holders. Winners must claim their prizes via the "My Tickets" tab.</p>
             </div>
           </div>
         </CardContent>
@@ -85,7 +85,7 @@ export function InformationPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-purple-900/20 p-5 rounded-lg border border-purple-500/20">
               <h3 className="text-lg font-semibold text-white mb-2">Weekly Draws</h3>
-              <p className="text-gray-300">
+              <p className="text-gray-300 text-center">
                 Every week, we select winners from all active raffle participants. 
                 The more tickets you buy across all raffles, the higher your chances of winning the weekly prizes.
               </p>
@@ -93,10 +93,52 @@ export function InformationPage() {
             
             <div className="bg-purple-900/20 p-5 rounded-lg border border-purple-500/20">
               <h3 className="text-lg font-semibold text-white mb-2">Monthly Draws</h3>
-              <p className="text-gray-300">
+              <p className="text-gray-300 text-center">
                 At the end of each month, we hold a special drawing with larger prize pools. 
                 Monthly draws include prizes for the top three participants based on ticket purchases.
               </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Smart Contracts */}
+      <Card className="border border-purple-500/20 rounded-lg bg-black/20 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-white flex items-center">
+            <svg className="w-5 h-5 mr-2 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            Smart Contracts
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="bg-purple-900/20 p-5 rounded-lg border border-purple-500/20">
+              <h3 className="text-lg font-semibold text-white mb-2">Raffle Contract</h3>
+              <div className="flex flex-col items-center space-y-2">
+                <div className="flex flex-col items-center">
+                  <span className="text-gray-400 mb-1">Address: GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE</span>
+                </div>
+                <div className="flex items-center justify-center">
+                  <span className="text-gray-400 mr-2">Solana Explorer:</span>
+                  <a href="https://explorer.solana.com/address/GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE" className="text-purple-300 hover:text-purple-200 underline">View on Explorer</a>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-purple-900/20 p-5 rounded-lg border border-purple-500/20">
+              <h3 className="text-lg font-semibold text-white mb-2">7affle Token</h3>
+              <div className="flex flex-col items-center space-y-2">
+                <div className="flex items-center justify-center">
+                  <span className="text-gray-400 mr-2">Token Address:</span>
+                  <span className="text-purple-300 font-mono">Coming Soon</span>
+                </div>
+                <div className="flex items-center justify-center">
+                  <span className="text-gray-400 mr-2">Solana Explorer:</span>
+                  <span className="text-purple-300">Coming Soon</span>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -109,14 +151,14 @@ export function InformationPage() {
             <svg className="w-5 h-5 mr-2 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Frequently Asked Questions
+            FAQ
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem value="item-1" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
-              <AccordionTrigger className="text-white hover:text-purple-300">How do raffles work on 7affle?</AccordionTrigger>
-              <AccordionContent className="text-gray-300">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">How do raffles work on 7affle?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-center">
                 Raffles on 7affle.fun are fully decentralized and run on the Solana blockchain. Each raffle has a 
                 set number of tickets available at a fixed price. When the raffle period ends, a winner is randomly 
                 selected using verifiable random functions on the blockchain. The winner can then claim their prize 
@@ -125,8 +167,8 @@ export function InformationPage() {
             </AccordionItem>
             
             <AccordionItem value="item-2" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
-              <AccordionTrigger className="text-white hover:text-purple-300">How do I receive my prize if I win?</AccordionTrigger>
-              <AccordionContent className="text-gray-300">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">How do I receive my prize if I win?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-center">
                 If you win a raffle, you'll need to claim your prize through the "My Tickets" tab. 
                 Navigate to that section, locate your winning ticket, and click the claim button. 
                 The prize will then be transferred to your connected wallet address.
@@ -134,8 +176,8 @@ export function InformationPage() {
             </AccordionItem>
             
             <AccordionItem value="item-3" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
-              <AccordionTrigger className="text-white hover:text-purple-300">How are winners selected?</AccordionTrigger>
-              <AccordionContent className="text-gray-300">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">How are winners selected?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-center">
                 Winners are selected using a cryptographically secure random number generator on the Solana blockchain. 
                 This ensures that the selection process is completely fair and transparent. Each ticket has an equal 
                 chance of being selected as the winner.
@@ -143,8 +185,8 @@ export function InformationPage() {
             </AccordionItem>
             
             <AccordionItem value="item-4" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
-              <AccordionTrigger className="text-white hover:text-purple-300">Can I create my own raffle?</AccordionTrigger>
-              <AccordionContent className="text-gray-300">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">Can I create my own raffle?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-center">
                 No, only platform administrators can create raffles. This restriction is in place to ensure 
                 the quality and legitimacy of all raffles on the platform. All official raffles undergo verification 
                 and quality control before being published.
@@ -152,8 +194,8 @@ export function InformationPage() {
             </AccordionItem>
             
             <AccordionItem value="item-5" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
-              <AccordionTrigger className="text-white hover:text-purple-300">What fees does 7affle charge?</AccordionTrigger>
-              <AccordionContent className="text-gray-300">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">What fees does 7affle charge?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-center">
                 7affle charges a 5% platform fee on all raffles. This fee is automatically deducted when 
                 prizes are distributed. The fee helps maintain the platform, develop new features, and ensure 
                 the long-term sustainability of the service.

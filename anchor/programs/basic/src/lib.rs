@@ -89,11 +89,12 @@ pub mod basic {
     }
 
     // Buy a ticket for a raffle
-    pub fn buy_ticket(ctx: Context<BuyTicket>) -> Result<()> {
+    pub fn buy_ticket(ctx: Context<BuyTicket>, _bump: u8) -> Result<()> {
         let raffle = &mut ctx.accounts.raffle;
         let buyer = &ctx.accounts.buyer;
         let ticket = &mut ctx.accounts.ticket;
         let user_stats = &mut ctx.accounts.user_stats;
+        let participant_flag = &mut ctx.accounts.participant_flag;
         let clock = Clock::get()?;
         
         // Check if raffle is active and not ended
@@ -113,6 +114,17 @@ pub mod basic {
                 raffle.to_account_info(),
             ],
         )?;
+        
+        // Track unique participants
+        if participant_flag.raffle.to_bytes() == [0; 32] {
+            // Initialize the participant flag
+            participant_flag.raffle = raffle.key();
+            participant_flag.participant = buyer.key();
+            
+            // Increment unique entrants counter
+            raffle.unique_entrants += 1;
+            msg!("New unique entrant: {}. Total unique entrants: {}", buyer.key(), raffle.unique_entrants);
+        }
         
         // Update user statistics for leaderboard
         user_stats.total_tickets_purchased += 1;
@@ -384,6 +396,7 @@ pub struct Raffle {
     pub winner: Option<u32>,       // Winning ticket number
     pub raffle_id: String,         // Unique raffle ID (e.g., "7F-SOL-001")
     pub used_numbers: Vec<u8>,   // Bit-packed bitmap to track used ticket numbers (8 tickets per byte)
+    pub unique_entrants: u32,      // Number of unique wallets that have entered the raffle
 }
 
 // Raffle history account structure
@@ -408,6 +421,13 @@ pub struct Ticket {
     pub buyer: Pubkey,                   // Buyer of the ticket
     pub raffle: Pubkey,                   // Raffle the ticket belongs to
     pub ticket_number: u32,               // Ticket number
+}
+
+// Participant flag account to track unique entrants per raffle
+#[account]
+pub struct ParticipantFlag {
+    pub raffle: Pubkey,     // The raffle this participation is for
+    pub participant: Pubkey, // The participant's wallet address
 }
 
 // User stats account structure for leaderboard tracking
@@ -473,6 +493,7 @@ pub struct InitializeRaffle<'info> {
 
 // Context for buying a ticket
 #[derive(Accounts)]
+#[instruction(bump: u8)]
 pub struct BuyTicket<'info> {
     #[account(mut)]
     pub raffle: Account<'info, Raffle>,
@@ -485,6 +506,13 @@ pub struct BuyTicket<'info> {
     
     #[account(mut, seeds = [b"user-stats", buyer.key().as_ref()], bump)]
     pub user_stats: Account<'info, UserStats>,
+    
+    // This account is created to track unique entrants
+    // Using a separate flag account to track first-time participants
+    #[account(init_if_needed, payer = buyer, space = 8 + size_of::<ParticipantFlag>(),
+              seeds = [b"participant", raffle.key().as_ref(), buyer.key().as_ref()],
+              bump)]
+    pub participant_flag: Account<'info, ParticipantFlag>,
     
     pub system_program: Program<'info, System>,
 }

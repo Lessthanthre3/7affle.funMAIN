@@ -1,0 +1,1064 @@
+{
+  "address": "GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE",
+  "metadata": {
+    "name": "basic",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "buy_ticket",
+      "discriminator": [
+        11,
+        24,
+        17,
+        193,
+        168,
+        116,
+        164,
+        169
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "ticket",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  99,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "raffle"
+              },
+              {
+                "kind": "account",
+                "path": "raffle.total_tickets",
+                "account": "Raffle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_stats",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  115,
+                  116,
+                  97,
+                  116,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "participant_flag",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  116,
+                  105,
+                  99,
+                  105,
+                  112,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "raffle"
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_bump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "cancel_raffle",
+      "discriminator": [
+        135,
+        191,
+        223,
+        141,
+        192,
+        186,
+        234,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_prize",
+      "discriminator": [
+        157,
+        233,
+        139,
+        121,
+        246,
+        62,
+        234,
+        235
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "winner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "winning_ticket"
+        },
+        {
+          "name": "authority",
+          "writable": true
+        },
+        {
+          "name": "raffle_history",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_reflections",
+      "discriminator": [
+        89,
+        178,
+        73,
+        28,
+        194,
+        243,
+        107,
+        3
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_token_account",
+          "writable": true
+        },
+        {
+          "name": "reflection_pool",
+          "writable": true
+        },
+        {
+          "name": "user_reflection",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  114,
+                  101,
+                  102,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "reflection_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reflection_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "draw_winner",
+      "discriminator": [
+        250,
+        103,
+        118,
+        147,
+        219,
+        235,
+        169,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_program_counter",
+      "discriminator": [
+        130,
+        106,
+        236,
+        61,
+        114,
+        11,
+        131,
+        153
+      ],
+      "accounts": [
+        {
+          "name": "program_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109,
+                  45,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_raffle",
+      "discriminator": [
+        110,
+        142,
+        92,
+        16,
+        15,
+        58,
+        89,
+        229
+      ],
+      "accounts": [
+        {
+          "name": "raffle",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109,
+                  45,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "ticket_price",
+          "type": "u64"
+        },
+        {
+          "name": "duration_hours",
+          "type": "u64"
+        },
+        {
+          "name": "max_tickets",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "initialize_reflection_system",
+      "discriminator": [
+        104,
+        117,
+        107,
+        141,
+        23,
+        208,
+        228,
+        19
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "reflection_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reflection_pool",
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_user_stats",
+      "discriminator": [
+        254,
+        243,
+        72,
+        98,
+        251,
+        130,
+        168,
+        213
+      ],
+      "accounts": [
+        {
+          "name": "user_stats",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  115,
+                  116,
+                  97,
+                  116,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_reflection",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  114,
+                  101,
+                  102,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "ParticipantFlag",
+      "discriminator": [
+        51,
+        189,
+        66,
+        181,
+        92,
+        60,
+        154,
+        239
+      ]
+    },
+    {
+      "name": "ProgramCounter",
+      "discriminator": [
+        212,
+        226,
+        197,
+        246,
+        246,
+        105,
+        155,
+        107
+      ]
+    },
+    {
+      "name": "Raffle",
+      "discriminator": [
+        143,
+        133,
+        63,
+        173,
+        138,
+        10,
+        142,
+        200
+      ]
+    },
+    {
+      "name": "RaffleHistory",
+      "discriminator": [
+        71,
+        168,
+        4,
+        190,
+        82,
+        101,
+        40,
+        226
+      ]
+    },
+    {
+      "name": "ReflectionConfig",
+      "discriminator": [
+        79,
+        48,
+        110,
+        26,
+        125,
+        151,
+        130,
+        183
+      ]
+    },
+    {
+      "name": "Ticket",
+      "discriminator": [
+        41,
+        228,
+        24,
+        165,
+        78,
+        90,
+        235,
+        200
+      ]
+    },
+    {
+      "name": "UserReflection",
+      "discriminator": [
+        71,
+        97,
+        1,
+        245,
+        208,
+        129,
+        238,
+        181
+      ]
+    },
+    {
+      "name": "UserStats",
+      "discriminator": [
+        176,
+        223,
+        136,
+        27,
+        122,
+        79,
+        32,
+        227
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NoReflectionsToClaim",
+      "msg": "No reflections to claim"
+    },
+    {
+      "code": 6001,
+      "name": "ReflectionTooSmall",
+      "msg": "Reflection amount too small"
+    },
+    {
+      "code": 6002,
+      "name": "InsufficientPoolFunds",
+      "msg": "Reflection pool has insufficient funds"
+    },
+    {
+      "code": 6003,
+      "name": "UserReflectionNotFound",
+      "msg": "User reflection account not found"
+    },
+    {
+      "code": 6004,
+      "name": "UnauthorizedAccess",
+      "msg": "Unauthorized access to reflection system"
+    }
+  ],
+  "types": [
+    {
+      "name": "ParticipantFlag",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "raffle",
+            "type": "pubkey"
+          },
+          {
+            "name": "participant",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProgramCounter",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "raffle_count",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Raffle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "ticket_price",
+            "type": "u64"
+          },
+          {
+            "name": "start_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "max_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "total_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "winner",
+            "type": {
+              "option": "u32"
+            }
+          },
+          {
+            "name": "raffle_id",
+            "type": "string"
+          },
+          {
+            "name": "used_numbers",
+            "type": "bytes"
+          },
+          {
+            "name": "unique_entrants",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RaffleHistory",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "raffle_id",
+            "type": "string"
+          },
+          {
+            "name": "raffle_name",
+            "type": "string"
+          },
+          {
+            "name": "creation_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "total_tickets_sold",
+            "type": "u32"
+          },
+          {
+            "name": "max_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "final_prize_amount",
+            "type": "u64"
+          },
+          {
+            "name": "winner_ticket",
+            "type": "u32"
+          },
+          {
+            "name": "winner_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "claim_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "transaction_signature",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReflectionConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "reflection_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "treasury_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "reflection_pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Ticket",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "raffle",
+            "type": "pubkey"
+          },
+          {
+            "name": "ticket_number",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserReflection",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_amount",
+            "type": "u64"
+          },
+          {
+            "name": "total_claimed",
+            "type": "u64"
+          },
+          {
+            "name": "last_update_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_tickets_purchased",
+            "type": "u32"
+          },
+          {
+            "name": "weekly_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "monthly_tickets",
+            "type": "u32"
+          },
+          {
+            "name": "current_week",
+            "type": "u32"
+          },
+          {
+            "name": "current_month",
+            "type": "u32"
+          }
+        ]
+      }
+    }
+  ]
+}

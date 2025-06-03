@@ -1,4 +1,4 @@
-import { useBasicProgram, RaffleData } from './basic-data-access'
+import { useBasicProgram, RaffleData, TicketData } from './basic-data-access'
 import { Clock as ClockIcon, ArrowRight as ArrowRightIcon, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from 'react'
@@ -123,7 +123,7 @@ export function BasicCreate() {
 
 // Component to display raffle details and allow interaction
 export function RaffleCard({ raffle }: { raffle: RaffleData }) {
-  const { buyTicket, drawWinner, claimPrize } = useBasicProgram()
+  const { buyTicket, drawWinner, claimPrize, userStats, myTickets } = useBasicProgram()
   const { publicKey } = useWallet()
   const isOwner = publicKey?.toString() === raffle.authority.toString()
   const isWinner = raffle.winner !== null && publicKey?.toString() === raffle.winner.toString()
@@ -218,6 +218,53 @@ export function RaffleCard({ raffle }: { raffle: RaffleData }) {
               style={{ width: `${Math.min(100, Math.round((raffle.totalTickets / raffle.maxTickets) * 100))}%` }}
             ></div>
           </div>
+          
+          {/* Contestants indicator */}
+          <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-700/30">
+            <p className="text-xs text-gray-400 flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 bg-purple-300 rounded-full"></span>Contestants
+            </p>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-purple-300 font-mono">
+                {/* Using the actual uniqueEntrants value from the contract */}
+                {raffle.uniqueEntrants}
+              </span>
+              <span className="text-xs text-gray-500 font-mono">wallets</span>
+            </div>
+          </div>
+          
+          {/* Win probability indicator */}
+          <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-700/30">
+            <p className="text-xs text-gray-400 flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 bg-green-300 rounded-full"></span>Your Chances
+            </p>
+            <div className="flex items-center gap-1">
+              {publicKey ? (
+                <>
+                  <span className="text-xs text-green-300 font-mono">
+                    {/* Calculate probability based on user's tickets for this raffle */}
+                    {(() => {
+                      // Get user's tickets for this raffle
+                      const userTickets = myTickets?.filter((t: TicketData) => 
+                        t.raffle.toString() === raffle.address.toString() && 
+                        t.isActive
+                      ).length || 0;
+                      
+                      // Calculate win probability
+                      if (userTickets === 0) return '0';
+                      if (raffle.totalTickets === 0) return '0';
+                      
+                      const probability = (userTickets / raffle.totalTickets) * 100;
+                      return probability.toFixed(1);
+                    })()}
+                  </span>
+                  <span className="text-xs text-gray-500 font-mono">%</span>
+                </>
+              ) : (
+                <span className="text-xs text-gray-500 font-mono">Connect wallet</span>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Ends In and Creator */}
@@ -278,9 +325,15 @@ export function RaffleCard({ raffle }: { raffle: RaffleData }) {
           <button
             onClick={() => buyTicket.mutateAsync({ raffleAddress: raffle.address })}
             disabled={!isActive || isFull || !publicKey || buyTicket.isPending}
-            className={`w-full py-2 px-4 rounded-md font-medium text-white text-sm transition-all duration-300 flex items-center justify-center gap-2 ${isActive && !isFull && publicKey ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-sm hover:shadow-purple-500/20' : 'bg-gray-700 cursor-not-allowed opacity-60'}`}
+            className={`w-full py-3 px-6 rounded-md font-medium text-white text-sm transition-all duration-300 flex items-center justify-center gap-2 ${isActive && !isFull && publicKey ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 shadow-md hover:shadow-purple-500/30' : 'bg-gray-700 cursor-not-allowed opacity-60'}`}
           >
-            <span>{buyTicket.isPending ? 'Buying...' : 'Buy Ticket'}</span>
+            <span>
+              {buyTicket.isPending 
+                ? 'Processing...' 
+                : userStats?.isInitialized 
+                  ? 'Buy Ticket' 
+                  : 'Register to Enter'}
+            </span>
             {!buyTicket.isPending && isActive && !isFull && publicKey && <ArrowRightIcon size={16} />}
           </button>
         )}
@@ -289,7 +342,7 @@ export function RaffleCard({ raffle }: { raffle: RaffleData }) {
           <Button 
             onClick={() => drawWinner.mutateAsync({ raffleAddress: raffle.address })}
             disabled={drawWinner.isPending}
-            className="w-full text-sm h-8 bg-indigo-600 hover:bg-indigo-700"
+            className="w-full text-sm py-3 px-6 bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-indigo-500/30 transition-all duration-300"
           >
             {drawWinner.isPending ? 'Drawing...' : 'Draw Winner'}
           </Button>
@@ -302,9 +355,9 @@ export function RaffleCard({ raffle }: { raffle: RaffleData }) {
               ticketNumber: raffle.winner!
             })}
             disabled={claimPrize.isPending || raffle.prizeClaimed}
-            className={`w-full text-sm h-8 ${raffle.prizeClaimed 
+            className={`w-full text-sm py-3 px-6 shadow-md transition-all duration-300 ${raffle.prizeClaimed 
               ? 'bg-gray-600 cursor-not-allowed' 
-              : 'bg-green-600 hover:bg-green-700'}`}
+              : 'bg-green-600 hover:bg-green-700 hover:shadow-green-500/30'}`}
           >
             {claimPrize.isPending 
               ? 'Claiming...' 
@@ -322,7 +375,11 @@ export function RaffleCard({ raffle }: { raffle: RaffleData }) {
 export function RafflesList() {
   // Always call hooks at the top level, before any conditional logic
   const { activeRaffles, fetchRaffles } = useBasicProgram()
-  const [filter, setFilter] = useState('active') // 'all', 'active', 'ended'
+  const [statusFilter, setStatusFilter] = useState('active') // 'all', 'active', 'ended'
+  const [priceFilter, setPriceFilter] = useState('all') // 'all', 'low', 'mid', 'high', 'premium'
+  const [timeFilter, setTimeFilter] = useState('all') // 'all', 'ending-soon', 'day', 'week', 'longer'
+  const [currentPage, setCurrentPage] = useState(1) // Pagination - current page
+  const rafflesPerPage = 9 // Show 9 raffles per page
   
   // Process data and compute derived state after all hooks are called
   // Filter out cancelled raffles (those with totalTickets = 0 and not active)
@@ -332,12 +389,63 @@ export function RafflesList() {
     return raffle.totalTickets > 0 || raffle.isActive
   }) || []
   
-  // Filter raffles based on selected filter
-  const filteredRaffles = filter === 'all' 
+  // Filter by status first
+  const statusFilteredRaffles = statusFilter === 'all' 
     ? nonCancelledRaffles 
-    : filter === 'active' 
+    : statusFilter === 'active' 
       ? nonCancelledRaffles.filter(raffle => raffle.isActive) 
       : nonCancelledRaffles.filter(raffle => !raffle.isActive)
+  
+  // Then apply price range filter
+  const priceFilteredRaffles = statusFilteredRaffles.filter(raffle => {
+    const price = raffle.ticketPrice;
+    if (priceFilter === 'all') return true;
+    if (priceFilter === 'low' && price > 0 && price <= 0.1) return true;
+    if (priceFilter === 'mid' && price > 0.1 && price <= 0.5) return true;
+    if (priceFilter === 'high' && price > 0.5 && price <= 1.0) return true;
+    if (priceFilter === 'premium' && price > 1.0) return true;
+    return false;
+  })
+  
+  // Finally apply time remaining filter
+  const filteredRaffles = priceFilteredRaffles.filter(raffle => {
+    // Skip time filtering for ended raffles
+    if (!raffle.isActive) return true;
+    
+    const timeRemaining = raffle.endTimestamp - Date.now();
+    const hoursRemaining = timeRemaining / (1000 * 60 * 60);
+    
+    if (timeFilter === 'all') return true;
+    if (timeFilter === 'ending-soon' && hoursRemaining <= 1) return true;
+    if (timeFilter === 'day' && hoursRemaining > 1 && hoursRemaining <= 24) return true;
+    if (timeFilter === 'week' && hoursRemaining > 24 && hoursRemaining <= 168) return true;
+    if (timeFilter === 'longer' && hoursRemaining > 168) return true;
+    return false;
+  })
+  
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, priceFilter, timeFilter]);
+  
+  // Pagination logic
+  const totalPages = Math.ceil(filteredRaffles.length / rafflesPerPage);
+  const indexOfLastRaffle = currentPage * rafflesPerPage;
+  const indexOfFirstRaffle = indexOfLastRaffle - rafflesPerPage;
+  const currentRaffles = filteredRaffles.slice(indexOfFirstRaffle, indexOfLastRaffle);
+  
+  // Page navigation handlers
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   
   // Now use conditional rendering in the return statement, not early returns
   return (
@@ -362,40 +470,131 @@ export function RafflesList() {
         </div>
       ) : (
         <>
-          {/* Filter buttons */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex p-1 bg-gray-800/50 rounded-lg border border-gray-700/50">
-              <button 
-                className={`px-4 py-2 text-sm rounded-md transition-all ${filter === 'all' ? 'bg-purple-800/70 text-white' : 'text-gray-400 hover:text-white'}`}
-                onClick={() => setFilter('all')}
+          {/* Filter Dropdowns */}
+          <div className="flex justify-center mb-6 gap-4">
+            {/* Status Filter */}
+            <div className="relative">
+              <label htmlFor="statusFilter" className="block text-xs text-gray-400 mb-1 ml-1">Status</label>
+              <select
+                id="statusFilter"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="appearance-none bg-gray-800/70 text-white border border-gray-700/60 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent w-36 text-sm"
               >
-                All Raffles
-              </button>
-              <button 
-                className={`px-4 py-2 text-sm rounded-md transition-all ${filter === 'active' ? 'bg-purple-800/70 text-white' : 'text-gray-400 hover:text-white'}`}
-                onClick={() => setFilter('active')}
-              >
-                Active
-              </button>
-              <button 
-                className={`px-4 py-2 text-sm rounded-md transition-all ${filter === 'ended' ? 'bg-purple-800/70 text-white' : 'text-gray-400 hover:text-white'}`}
-                onClick={() => setFilter('ended')}
-              >
-                Ended
-              </button>
+                <option value="all">All Raffles</option>
+                <option value="active">Active</option>
+                <option value="ended">Ended</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 pt-4 text-gray-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
             </div>
+            
+            {/* Price Filter */}
+            <div className="relative">
+              <label htmlFor="priceFilter" className="block text-xs text-gray-400 mb-1 ml-1">Price</label>
+              <select
+                id="priceFilter"
+                value={priceFilter}
+                onChange={(e) => setPriceFilter(e.target.value)}
+                className="appearance-none bg-gray-800/70 text-white border border-gray-700/60 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent w-36 text-sm"
+              >
+                <option value="all">All Prices</option>
+                <option value="low">0-0.1 SOL</option>
+                <option value="mid">0.1-0.5 SOL</option>
+                <option value="high">0.5-1.0 SOL</option>
+                <option value="premium">1.0+ SOL</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 pt-4 text-gray-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
+            </div>
+            
+            {/* Time Remaining Filter */}
+            <div className="relative">
+              <label htmlFor="timeFilter" className="block text-xs text-gray-400 mb-1 ml-1">Time Left</label>
+              <select
+                id="timeFilter"
+                value={timeFilter}
+                onChange={(e) => setTimeFilter(e.target.value)}
+                className="appearance-none bg-gray-800/70 text-white border border-gray-700/60 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent w-36 text-sm"
+              >
+                <option value="all">Any Time</option>
+                <option value="ending-soon">&lt; 1 hour</option>
+                <option value="day">&lt; 24 hours</option>
+                <option value="week">&lt; 1 week</option>
+                <option value="longer">&gt; 1 week</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 pt-4 text-gray-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          {/* Results counter */}
+          <div className="mb-4 text-center">
+            <p className="text-sm text-gray-400">
+              {filteredRaffles.length > 0 ? 
+                `Showing ${indexOfFirstRaffle + 1}-${Math.min(indexOfLastRaffle, filteredRaffles.length)} of ${filteredRaffles.length} raffles` : 
+                ''}  
+            </p>
           </div>
           
           {filteredRaffles.length === 0 ? (
             <div className="text-center py-8 bg-gray-900/30 rounded-xl border border-gray-800/40">
-              <p className="text-gray-400">No {filter} raffles found.</p>
+              <p className="text-gray-400">No raffles found matching your filters.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRaffles.map((raffle) => (
-                <RaffleCard key={raffle.address.toString()} raffle={raffle} />
-              ))}
-            </div>
+            <>
+              <div className="p-8 bg-gray-900/30 rounded-2xl border border-gray-800/50 shadow-xl shadow-purple-900/10 backdrop-blur-sm mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {currentRaffles.map(raffle => (
+                    <RaffleCard key={raffle.address.toString()} raffle={raffle} />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Pagination controls */}
+              {totalPages > 1 && (
+                <div className="bg-gray-900/30 rounded-xl border border-gray-800/50 shadow-lg shadow-purple-900/5 backdrop-blur-sm py-4 px-6">
+                  <div className="flex justify-center items-center gap-4">
+                    <button
+                      onClick={goToPreviousPage}
+                      disabled={currentPage === 1}
+                      className={`p-2 rounded-lg ${currentPage === 1 ? 'bg-gray-800/30 text-gray-600 cursor-not-allowed' : 'bg-purple-900/40 text-white hover:bg-purple-800/50 transition-all duration-200 hover:shadow-md hover:shadow-purple-900/20'}`}
+                      aria-label="Previous Page"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    
+                    <div className="px-4 py-1.5 bg-gray-800/40 rounded-lg border border-gray-700/50 min-w-[100px] text-center">
+                      <span className="text-gray-300 font-medium">
+                        {currentPage} / {totalPages}
+                      </span>
+                    </div>
+                    
+                    <button
+                      onClick={goToNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`p-2 rounded-lg ${currentPage === totalPages ? 'bg-gray-800/30 text-gray-600 cursor-not-allowed' : 'bg-purple-900/40 text-white hover:bg-purple-800/50 transition-all duration-200 hover:shadow-md hover:shadow-purple-900/20'}`}
+                      aria-label="Next Page"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
@@ -410,14 +609,12 @@ export function MyTickets() {
 }
 
 // Main component that displays the different tabs
-export function BasicProgram() {
-  const { activeRaffles, myTickets } = useBasicProgram()
-  const { publicKey } = useWallet()
+export function BasicProgram({ isWalletConnected = false, isAdmin = false }: { isWalletConnected?: boolean, isAdmin?: boolean }) {
+  const { activeRaffles, myTickets, userStats } = useBasicProgram()
   const [activeTab, setActiveTab] = useState('raffles')
-  const isAdmin = publicKey?.toString() === 'GrDWUZZpCsxXR8qnZXREmE3bDgkQxLG6BHve3NLPbHFR' ||
-               publicKey?.toString() === 'ALo5Qhjy46wVCXnD4osQXTq6ufF5MZ9uhxARAy7affLe' ||
-               publicKey?.toString() === 'ACZfNEpJUufGH5MhpUAmoNkCRTpP2KkGhZXeNX1q9UXT' ||
-               publicKey?.toString() === 'GhSwQL8opHBhE8PNog9ZGbuzTVdhPMEr5JJTHZQ9GRHq'
+  
+  // Check if wallet is initialized (has registered user stats)
+  // This is used to conditionally show tabs and change button text
 
   useEffect(() => {
     if (isAdmin) {
@@ -485,9 +682,10 @@ export function BasicProgram() {
         </div>
       </div>
       
-      {/* Tabs */}
-      <div className="bg-gray-900/50 rounded-lg p-1 backdrop-blur-sm border border-gray-800/50 mb-8">
+      {/* Tab Navigation - Properly structured outside of the stats cards */}
+      <div className="bg-gray-900/50 rounded-lg p-1 backdrop-blur-sm border border-gray-800/50 mb-8 mt-8">
         <div className="py-2 flex items-center justify-center space-x-4 overflow-x-auto">
+          {/* Active Raffles - Always visible */}
           <button 
             onClick={() => setActiveTab('raffles')}
             className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'raffles' 
@@ -496,61 +694,33 @@ export function BasicProgram() {
           >
             <div className="flex items-center space-x-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>Active Raffles</span>
-            </div>
-          </button>
-          
-          <button 
-            onClick={() => setActiveTab('mytickets')}
-            className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'mytickets' 
-              ? 'bg-gradient-to-br from-purple-900/80 to-purple-800/80 text-white font-medium shadow-lg shadow-purple-900/20' 
-              : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
-          >
-            <div className="flex items-center space-x-2">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-              </svg>
-              <span>My Tickets</span>
-              {myTickets.length > 0 && (
+              {activeRaffles.length > 0 && (
                 <span className="bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  {myTickets.length}
+                  {activeRaffles.length}
                 </span>
               )}
             </div>
           </button>
           
-          {/* Removed Unclaimed Prizes tab as requested */}
+          {/* Raffle History - Only visible for initialized wallets */}
+          {userStats?.isInitialized && (
+            <button 
+              onClick={() => setActiveTab('history')}
+              className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'history' 
+                ? 'bg-gradient-to-br from-purple-900/80 to-purple-800/80 text-white font-medium shadow-lg shadow-purple-900/20' 
+                : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
+            >
+              <div className="flex items-center space-x-2">
+                <ClockIcon className="w-4 h-4" />
+                <span>Raffle History</span>
+              </div>
+            </button>
+          )}
           
-          <button 
-            onClick={() => setActiveTab('history')}
-            className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'history' 
-              ? 'bg-gradient-to-br from-purple-900/80 to-purple-800/80 text-white font-medium shadow-lg shadow-purple-900/20' 
-              : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
-          >
-            <div className="flex items-center space-x-2">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Raffle History</span>
-            </div>
-          </button>
-
-          {/* Referrals tab removed */}
-
-          <button 
-            onClick={() => setActiveTab('leaderboard')}
-            className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'leaderboard' 
-              ? 'bg-gradient-to-br from-purple-900/80 to-purple-800/80 text-white font-medium shadow-lg shadow-purple-900/20' 
-              : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
-          >
-            <div className="flex items-center space-x-2">
-              <Trophy className="w-4 h-4" />
-              <span>Exclusive Raffle</span>
-            </div>
-          </button>
-          
+          {/* Information - Always visible */}
           <button 
             onClick={() => setActiveTab('info')}
             className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'info' 
@@ -564,6 +734,45 @@ export function BasicProgram() {
               <span>Information</span>
             </div>
           </button>
+          
+          {/* My Tickets - Only visible when wallet is connected */}
+          {isWalletConnected && (
+            <button 
+              onClick={() => setActiveTab('mytickets')}
+              className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'mytickets' 
+                ? 'bg-gradient-to-br from-purple-900/80 to-purple-800/80 text-white font-medium shadow-lg shadow-purple-900/20' 
+                : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
+            >
+              <div className="flex items-center space-x-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                </svg>
+                <span>My Tickets</span>
+                {myTickets.length > 0 && (
+                  <span className="bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {myTickets.length}
+                  </span>
+                )}
+              </div>
+            </button>
+          )}
+
+          {/* Exclusive Raffle - Only visible when wallet is connected */}
+          {isWalletConnected && (
+            <button 
+              onClick={() => setActiveTab('leaderboard')}
+              className={`py-2.5 px-4 rounded-md transition-all duration-200 ${activeTab === 'leaderboard' 
+                ? 'bg-gradient-to-br from-purple-900/80 to-purple-800/80 text-white font-medium shadow-lg shadow-purple-900/20' 
+                : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'}`}
+            >
+              <div className="flex items-center space-x-2">
+                <Trophy className="w-4 h-4" />
+                <span>Exclusive Raffle</span>
+              </div>
+            </button>
+          )}
+          
+          {/* Admin-only tabs */}
           {isAdmin && (
             <>
               <button 

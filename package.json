@@ -14,7 +14,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "token:setup": "ts-node --transpile-only src/scripts/setup-local-token.ts",
+    "start:local": "REACT_APP_ENVIRONMENT=local npm run dev"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.1",

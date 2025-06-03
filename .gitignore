@@ -34,3 +34,26 @@ dist-ssr
 /anchor/target/sbf-solana-solana
 /anchor/target/test-ledger
 /anchor/target/.rustc_info.json
+
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env*.local
+
+# Keys and Secrets
+*.keypair
+*.pem
+*.key
+wallet.json
+keypair.json
+*-keypair.json
+
+# Specific token keypair directory
+/token/seven-token/keypair/
+
+# Build artifacts
+build/
+/dist/

@@ -91,11 +91,48 @@ export type Basic = {
           }
         },
         {
+          "name": "participantFlag",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  116,
+                  105,
+                  99,
+                  105,
+                  112,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "raffle"
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              }
+            ]
+          }
+        },
+        {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "bump",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "cancelRaffle",
@@ -373,6 +410,19 @@ export type Basic = {
   ],
   "accounts": [
     {
+      "name": "participantFlag",
+      "discriminator": [
+        51,
+        189,
+        66,
+        181,
+        92,
+        60,
+        154,
+        239
+      ]
+    },
+    {
       "name": "programCounter",
       "discriminator": [
         212,
@@ -537,6 +587,22 @@ export type Basic = {
   ],
   "types": [
     {
+      "name": "participantFlag",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "raffle",
+            "type": "pubkey"
+          },
+          {
+            "name": "participant",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
       "name": "programCounter",
       "type": {
         "kind": "struct",
@@ -606,6 +672,10 @@ export type Basic = {
           {
             "name": "usedNumbers",
             "type": "bytes"
+          },
+          {
+            "name": "uniqueEntrants",
+            "type": "u32"
           }
         ]
       }

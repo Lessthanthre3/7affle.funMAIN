@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Trophy, Award } from 'lucide-react'
+import { Trophy, Award, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { ellipsify } from '@/lib/utils'
 import { WinnersDisplay } from './winners-display'
@@ -13,6 +13,11 @@ export function Leaderboard() {
   const { publicKey } = useWallet()
   const { fetchLeaderboard, userStats } = useBasicProgram()
   const userAddress = publicKey?.toString() || ''
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+  const maxPages = 5 // For weekly, this will show up to 50 participants
   
   // If the user hasn't initialized their stats yet, show the init component
   const showInitialize = publicKey && userStats && !userStats.isInitialized
@@ -34,6 +39,29 @@ export function Leaderboard() {
   
   const currentLeaderboard = formattedLeaderboard[period]
   const userRank = currentLeaderboard.findIndex(entry => entry.address === userAddress)
+  
+  // Reset to page 1 when switching between weekly/monthly view
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [period])
+  
+  // Calculate which items to show on the current page
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = Math.min(startIndex + itemsPerPage, currentLeaderboard.length)
+  const currentPageData = currentLeaderboard.slice(startIndex, endIndex)
+  
+  // Get total pages based on data length
+  const totalPages = Math.min(
+    Math.ceil(currentLeaderboard.length / itemsPerPage),
+    maxPages
+  )
+  
+  // Function to change page
+  const changePage = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage)
+    }
+  }
   
   const [activeTab, setActiveTab] = useState<'rankings' | 'winners'>('rankings')
 
@@ -223,58 +251,99 @@ export function Leaderboard() {
             <p className="mt-2">Be the first to participate!</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {currentLeaderboard.map((player, index) => {
-              const isCurrentUser = player.address === userAddress
-              
-              return (
-                <div 
-                  key={player.address} 
-                  className={`flex items-center ${isCurrentUser ? 'bg-purple-900/30' : 'bg-black/30'} rounded-lg p-3`}
-                >
-                  <div className="flex-shrink-0 w-8 text-center">
-                    {index < 3 ? (
-                      <div className="flex justify-center">
-                        {index === 0 && <Trophy className="h-5 w-5 text-yellow-400" />}
-                        {index === 1 && <Trophy className="h-5 w-5 text-gray-400" />}
-                        {index === 2 && <Trophy className="h-5 w-5 text-amber-700" />}
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">#{index + 1}</span>
-                    )}
-                  </div>
-                  
-                  <div className="flex-grow ml-4">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white mr-2">
-                        {isCurrentUser ? 'You' : `Player ${index + 1}`}
-                      </span>
-                      <span className="text-purple-300 text-sm">
-                        {ellipsify(player.address)}
-                      </span>
-                      {isCurrentUser && (
-                        <span className="ml-2 text-xs bg-purple-700 text-white px-2 py-0.5 rounded">
-                          You
-                        </span>
+          <>
+            <div className="space-y-3">
+              {currentPageData.map((player, index) => {
+                // Calculate the actual index in the leaderboard
+                const actualIndex = startIndex + index
+                const isCurrentUser = player.address === userAddress
+                
+                return (
+                  <div 
+                    key={player.address} 
+                    className={`flex items-center ${isCurrentUser ? 'bg-purple-900/30' : 'bg-black/30'} rounded-lg p-3`}
+                  >
+                    <div className="flex-shrink-0 w-8 text-center">
+                      {actualIndex < 3 ? (
+                        <div className="flex justify-center">
+                          {actualIndex === 0 && <Trophy className="h-5 w-5 text-yellow-400" />}
+                          {actualIndex === 1 && <Trophy className="h-5 w-5 text-gray-400" />}
+                          {actualIndex === 2 && <Trophy className="h-5 w-5 text-amber-700" />}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">#{actualIndex + 1}</span>
                       )}
                     </div>
                     
-                    <div className="mt-1 w-full h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-purple-500" 
-                        style={{ width: `${(player.tickets / (currentLeaderboard[0]?.tickets || 1)) * 100}%` }}
-                      />
+                    <div className="flex-grow ml-4">
+                      <div className="flex items-center">
+                        <span className="font-medium text-white mr-2">
+                          {isCurrentUser ? 'You' : `Player ${actualIndex + 1}`}
+                        </span>
+                        <span className="text-purple-300 text-sm">
+                          {ellipsify(player.address)}
+                        </span>
+                        {isCurrentUser && (
+                          <span className="ml-2 text-xs bg-purple-700 text-white px-2 py-0.5 rounded">
+                            You
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="mt-1 w-full h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-purple-500" 
+                          style={{ width: `${(player.tickets / (currentLeaderboard[0]?.tickets || 1)) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex-shrink-0 ml-4 text-right">
+                      <span className="text-white font-medium">{player.tickets}</span>
+                      <span className="text-gray-400 ml-1">tickets</span>
                     </div>
                   </div>
-                  
-                  <div className="flex-shrink-0 ml-4 text-right">
-                    <span className="text-white font-medium">{player.tickets}</span>
-                    <span className="text-gray-400 ml-1">tickets</span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center mt-6 space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => changePage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="h-8 w-8 p-0 border-purple-500/30"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+                  <Button
+                    key={pageNum}
+                    variant={pageNum === currentPage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => changePage(pageNum)}
+                    className={`h-8 w-8 p-0 ${pageNum === currentPage ? 'bg-purple-600' : 'border-purple-500/30'}`}
+                  >
+                    {pageNum}
+                  </Button>
+                ))}
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => changePage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="h-8 w-8 p-0 border-purple-500/30"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </Card>
         </>

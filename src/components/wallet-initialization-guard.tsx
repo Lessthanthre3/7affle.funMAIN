@@ -14,9 +14,9 @@ export function WalletInitializationGuard({ children }: { children: React.ReactN
   const location = useLocation()
 
   useEffect(() => {
-    // If wallet is connected but not initialized and not already on dashboard
+    // Only redirect if wallet is connected but not initialized and not already on dashboard
     if (
-      publicKey && 
+      publicKey && // Only apply redirection for connected wallets
       userStats && 
       !userStats.isInitialized && 
       location.pathname !== '/dashboard'
@@ -24,6 +24,7 @@ export function WalletInitializationGuard({ children }: { children: React.ReactN
       console.log('Wallet not initialized. Redirecting to dashboard...')
       navigate('/dashboard')
     }
+    // If no wallet is connected, allow viewing any page without redirection
   }, [publicKey, userStats, navigate, location.pathname])
 
   return <>{children}</>

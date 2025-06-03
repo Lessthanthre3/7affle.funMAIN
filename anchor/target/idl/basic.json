@@ -85,11 +85,48 @@
           }
         },
         {
+          "name": "participant_flag",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  116,
+                  105,
+                  99,
+                  105,
+                  112,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "raffle"
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              }
+            ]
+          }
+        },
+        {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "_bump",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "cancel_raffle",
@@ -367,6 +404,19 @@
   ],
   "accounts": [
     {
+      "name": "ParticipantFlag",
+      "discriminator": [
+        51,
+        189,
+        66,
+        181,
+        92,
+        60,
+        154,
+        239
+      ]
+    },
+    {
       "name": "ProgramCounter",
       "discriminator": [
         212,
@@ -531,6 +581,22 @@
   ],
   "types": [
     {
+      "name": "ParticipantFlag",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "raffle",
+            "type": "pubkey"
+          },
+          {
+            "name": "participant",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
       "name": "ProgramCounter",
       "type": {
         "kind": "struct",
@@ -600,6 +666,10 @@
           {
             "name": "used_numbers",
             "type": "bytes"
+          },
+          {
+            "name": "unique_entrants",
+            "type": "u32"
           }
         ]
       }

@@ -4,6 +4,7 @@ package_manager = "yarn"
 [features]
 resolution = true
 skip-lint = false
+init-if-needed = true
 
 [programs.localnet]
 basic = "GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE"
