@@ -56,7 +56,7 @@ export const ENV = {
   isLocal: ENVIRONMENT === 'local',
   isDevnet: ENVIRONMENT === 'devnet',
   isMainnet: ENVIRONMENT === 'mainnet',
-  rpcEndpoint: RPC_ENDPOINTS[ENVIRONMENT],
+  rpcEndpoint: process.env.REACT_APP_SOLANA_RPC || RPC_ENDPOINTS[ENVIRONMENT],
   tokenProgramId: TOKEN_PROGRAM_IDS[ENVIRONMENT],
   raffleProgramId: RAFFLE_PROGRAM_IDS[ENVIRONMENT],
   tokenMintAddress: TOKEN_MINT_ADDRESSES[ENVIRONMENT],
