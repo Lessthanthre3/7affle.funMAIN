@@ -6,8 +6,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { MintLayout } from '@solana/spl-token'
 
-// Import the IDL directly
-import SevenTokenIDL from '../target/idl/seven_token.json'
+// Import the IDL directly from the public/idl directory for frontend compatibility
+import SevenTokenIDL from '../../../public/idl/seven_token.json'
 
 // Re-export the generated IDL and type
 export { SevenToken, SevenTokenIDL }
