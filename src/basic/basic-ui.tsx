@@ -375,6 +375,15 @@ export function RaffleCard({ raffle }: { raffle: RaffleData }) {
 export function RafflesList() {
   // Always call hooks at the top level, before any conditional logic
   const { activeRaffles, fetchRaffles } = useBasicProgram()
+  
+  // Debug logging
+  console.log('RafflesList - activeRaffles:', activeRaffles)
+  console.log('RafflesList - fetchRaffles status:', { 
+    isLoading: fetchRaffles.isLoading, 
+    isError: fetchRaffles.isError, 
+    error: fetchRaffles.error,
+    data: fetchRaffles.data
+  })
   const [statusFilter, setStatusFilter] = useState('active') // 'all', 'active', 'ended'
   const [priceFilter, setPriceFilter] = useState('all') // 'all', 'low', 'mid', 'high', 'premium'
   const [timeFilter, setTimeFilter] = useState('all') // 'all', 'ending-soon', 'day', 'week', 'longer'

@@ -1,0 +1,14 @@
+{
+  "name": "7F Token",
+  "symbol": "7F",
+  "description": "Official token for 7affle platform",
+  "image": "https://i.imgur.com/BrGX4za.png",
+  "properties": {
+    "files": [
+      {
+        "uri": "https://i.imgur.com/BrGX4za.png",
+        "type": "image/png"
+      }
+    ]
+  }
+}

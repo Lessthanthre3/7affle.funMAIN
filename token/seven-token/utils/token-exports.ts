@@ -128,6 +128,9 @@ export function findUserReflectionPDA(programId: PublicKey, userPublicKey: Publi
   )
 }
 
+// Export the metadata update function
+export { updateTokenMetadata } from './update-metadata';
+
 // Helper function to initialize token mint using the existing keypair
 export async function initializeTokenMint(
   provider: AnchorProvider,

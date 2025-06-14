@@ -19,6 +19,7 @@ import {
   getOrCreateAssociatedTokenAccount,
   mintTo
 } from '@solana/spl-token'
+import { updateTokenMetadata } from '../../token/seven-token/utils/update-metadata'
 import { toast } from 'sonner'
 
 // UI Components
@@ -218,6 +219,58 @@ export function TokenAdmin() {
           treasuryPublicKey
         )
         console.log('Treasury token account created:', treasuryAta.address.toString())
+        
+        // Create token metadata with all the specified details
+        try {
+          toast.loading('Creating token metadata...')
+          
+          // Token metadata details
+          const tokenName = '7affle Token'
+          const tokenSymbol = '$7F'
+          const tokenDescription = 'The official token of 7affle.fun'
+          
+          // Using the Imgur URL you provided for the token image
+          const imageUrl = 'https://i.imgur.com/BrGX4za.png'
+          
+          // Create metadata URI with all details
+          const metadataUri = JSON.stringify({
+            name: tokenName,
+            symbol: tokenSymbol,
+            description: tokenDescription,
+            image: imageUrl,
+            external_url: 'https://7affle.fun',
+            properties: {
+              files: [
+                {
+                  uri: imageUrl,
+                  type: 'image/png'
+                }
+              ],
+              category: 'image',
+              creators: [],
+              links: {
+                website: 'https://7affle.fun',
+                telegram: 'https://t.me/Raffle_Fun'
+              }
+            }
+          })
+          
+          // Create token metadata using the utility function
+          const metadataTx = await updateTokenMetadata(
+            provider,
+            { publicKey, signTransaction },
+            tokenMint,
+            tokenName,
+            tokenSymbol,
+            metadataUri
+          )
+          
+          console.log('Token metadata created with tx:', metadataTx)
+          toast.success('Token metadata created successfully!')
+        } catch (metadataError) {
+          console.error('Error creating token metadata:', metadataError)
+          toast.error(`Failed to create token metadata: ${metadataError instanceof Error ? metadataError.message : 'Unknown error'}`)
+        }
         
         // Reload token data
         await loadTokenData()

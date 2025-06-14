@@ -34,6 +34,12 @@ import {
   getMint,
   getOrCreateAssociatedTokenAccount
 } from '@solana/spl-token'
+import { updateTokenMetadata } from '../../token/seven-token/utils/update-metadata'
+import { 
+  TOKEN_NAME,
+  TOKEN_SYMBOL,
+  TOKEN_IMAGE
+} from '../lib/token-constants'
 
 // Token constants
 const DEFAULT_DECIMALS = 6
@@ -53,8 +59,6 @@ export function TokenManagement(): React.ReactElement {
   const [totalSupply, setTotalSupply] = useState(TOTAL_SUPPLY_DEFAULT.toString())
   const [mintInitialized, setMintInitialized] = useState(false)
   const [configInitialized, setConfigInitialized] = useState(false)
-  const [excludedAddresses, setExcludedAddresses] = useState<string[]>([])
-  const [excludedFromRewardsAddresses, setExcludedFromRewardsAddresses] = useState<string[]>([])
   
   // UI states
   const [isLoading, setIsLoading] = useState(false)
@@ -64,8 +68,11 @@ export function TokenManagement(): React.ReactElement {
   
   // Form inputs
   const [treasuryAddress, setTreasuryAddress] = useState('')
-  const [excludeAddress, setExcludeAddress] = useState('')
-  const [excludeRewardsAddress, setExcludeRewardsAddress] = useState('')
+  
+  // Token metadata form inputs
+  const [tokenName, setTokenName] = useState('')
+  const [tokenSymbol, setTokenSymbol] = useState('')
+  const [tokenImageUri, setTokenImageUri] = useState('')
   
   // For last transaction status
   const [_, setLastTxId] = useState<string>('')  // Using underscore for unused variable
@@ -97,6 +104,16 @@ export function TokenManagement(): React.ReactElement {
       setTokenMint(mintAddress)
     }
   }, [])
+  
+  // Update form fields with current token data when available
+  useEffect(() => {
+    // Only update if connected and authorized
+    if (isAdmin && connected) {
+      setTokenName(TOKEN_NAME)
+      setTokenSymbol(TOKEN_SYMBOL)
+      setTokenImageUri(TOKEN_IMAGE)
+    }
+  }, [isAdmin, connected])
   
   // Only load token status once on initial mount
   useEffect(() => {
@@ -278,13 +295,11 @@ export function TokenManagement(): React.ReactElement {
       
       console.log('Checking token status...')
       
-      // Use local variables to avoid state sync issues
+      // Set variables to track if components are initialized
       let mintIsInitialized = false
       let configIsInitialized = false
-      let decimalsValue = tokenDecimals
+      let decimalsValue = DEFAULT_DECIMALS
       let supplyValue = ''
-      let excludedAddressesList: string[] = []
-      let excludedFromRewardsAddressesList: string[] = []
       
       // Check if token mint exists
       try {
@@ -321,21 +336,7 @@ export function TokenManagement(): React.ReactElement {
             configIsInitialized = true
             console.log('Token config initialized')
             
-            // Get addresses excluded from fees
-            if (configAccount.excludedFromFee && Array.isArray(configAccount.excludedFromFee)) {
-              excludedAddressesList = configAccount.excludedFromFee
-                .filter((addr: any) => addr !== null)
-                .map((addr: any) => addr.toString())
-              console.log('Fee excluded addresses loaded:', excludedAddressesList)
-            }
-            
-            // Get addresses excluded from rewards
-            if (configAccount.excludedFromRewards && Array.isArray(configAccount.excludedFromRewards)) {
-              excludedFromRewardsAddressesList = configAccount.excludedFromRewards
-                .filter((addr: any) => addr !== null)
-                .map((addr: any) => addr.toString())
-              console.log('Reward excluded addresses loaded:', excludedFromRewardsAddressesList)
-            }
+            // Exclusion functionality has been removed
           }
         } catch (error) {
           console.log('Token config not initialized')
@@ -347,8 +348,6 @@ export function TokenManagement(): React.ReactElement {
       setConfigInitialized(configIsInitialized)
       setTokenDecimals(decimalsValue)
       setTokenSupply(supplyValue)
-      setExcludedAddresses(excludedAddressesList)
-      setExcludedFromRewardsAddresses(excludedFromRewardsAddressesList)
       
       // Update progress based on initialization status
       let progress = 0
@@ -513,133 +512,63 @@ export function TokenManagement(): React.ReactElement {
     }
   }
   
-  // Exclude address from fees
-  async function excludeFromFees() {
+  // Exclusion functionality has been removed
+  
+  // Update token metadata
+  async function updateTokenMetadataStep() {
+    if (!provider || !connected || !publicKey) {
+      toast.error('Wallet not connected')
+      return
+    }
+    
     try {
       setIsLoading(true)
       
-      if (!provider || !publicKey || !program || !configInitialized) {
-        toast.error('Token must be fully initialized first')
+      // Validate inputs
+      if (!tokenName || !tokenSymbol || !tokenImageUri) {
+        toast.error('Please fill in all fields')
+        setIsLoading(false)
         return
       }
       
-      // Basic input validation
-      if (!excludeAddress.trim()) {
-        toast.error('Address to exclude is required')
-        return
-      }
+      // Send transaction to update metadata
+      const signature = await updateTokenMetadata(
+        provider,
+        provider.wallet, // wallet/signer
+        tokenMint!, // Non-null assertion since we've checked for initialization
+        tokenName,
+        tokenSymbol,
+        tokenImageUri
+      )
       
-      let addressToExclude: PublicKey
-      try {
-        addressToExclude = new PublicKey(excludeAddress)
-      } catch (error) {
-        toast.error('Invalid address')
-        return
-      }
+      // Show success message
+      toast.success(
+        <div className="flex flex-col">
+          <span>Token metadata updated successfully!</span>
+          <a
+            href={`https://solscan.io/tx/${signature}?cluster=${provider.connection.rpcEndpoint.includes('devnet') ? 'devnet' : 'mainnet'}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            View on Solscan
+          </a>
+        </div>
+      )
       
-      // Check if address is already excluded
-      if (excludedAddresses.includes(addressToExclude.toString())) {
-        toast.info('Address is already excluded from fees')
-        setExcludeAddress('')
-        return
-      }
+      // Update the last tx id
+      setLastTxId(signature)
       
-      // Exclude address from fees - follows Anchor test pattern
-      console.log(`Excluding address ${addressToExclude.toString()} from fees...`)
-      
-      const tx = await program.methods
-        .excludeFromFees(addressToExclude)
-        .accounts({
-          authority: publicKey,
-          tokenConfig: tokenConfigPDA,
-        } as any)
-        .rpc()
-      
-      console.log('Address excluded with tx:', tx)
-      toast.success('Address excluded from fees successfully!')
-      
-      // Add to local list
-      setExcludedAddresses([...excludedAddresses, addressToExclude.toString()])
-      
-      // Clear input
-      setExcludeAddress('')
-      
-      // Store last transaction ID for reference
-      setLastTxId(tx)
-      
-      // Manually refresh token status
-      refreshTokenStatus()
-    } catch (error) {
-      console.error('Error excluding address from fees:', error)
-      toast.error(`Failed to exclude address: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } catch (error: any) {
+      console.error('Error updating token metadata:', error)
+      toast.error(`Failed to update token metadata: ${error?.message || 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }
   }
   
   // Exclude address from rewards
-  async function excludeFromRewards() {
-    try {
-      setIsLoading(true)
-      
-      if (!provider || !publicKey || !program || !configInitialized) {
-        toast.error('Token must be fully initialized first')
-        return
-      }
-      
-      // Basic input validation
-      if (!excludeRewardsAddress.trim()) {
-        toast.error('Address to exclude is required')
-        return
-      }
-      
-      let addressToExclude: PublicKey
-      try {
-        addressToExclude = new PublicKey(excludeRewardsAddress)
-      } catch (error) {
-        toast.error('Invalid address')
-        return
-      }
-      
-      // Check if address is already excluded
-      if (excludedFromRewardsAddresses.includes(addressToExclude.toString())) {
-        toast.info('Address is already excluded from rewards')
-        setExcludeRewardsAddress('')
-        return
-      }
-      
-      // Exclude address from rewards
-      console.log(`Excluding address ${addressToExclude.toString()} from rewards...`)
-      
-      const tx = await program.methods
-        .excludeFromRewards(addressToExclude)
-        .accounts({
-          authority: publicKey,
-          tokenConfig: tokenConfigPDA,
-        } as any)
-        .rpc()
-      
-      console.log('Address excluded from rewards with tx:', tx)
-      toast.success('Address excluded from rewards successfully!')
-      
-      // Add to local list
-      setExcludedFromRewardsAddresses([...excludedFromRewardsAddresses, addressToExclude.toString()])
-      
-      // Clear input
-      setExcludeRewardsAddress('')
-      
-      // Store last transaction ID for reference
-      setLastTxId(tx)
-      
-      // Manually refresh token status
-      refreshTokenStatus()
-    } catch (error) {
-      console.error('Error excluding address from rewards:', error)
-      toast.error(`Failed to exclude address from rewards: ${error instanceof Error ? error.message : 'Unknown error'}`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // Rewards exclusion functionality has been removed
   
 
   // Render admin access denied message if not admin
@@ -679,11 +608,10 @@ export function TokenManagement(): React.ReactElement {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="initialize">Initialize</TabsTrigger>
-            <TabsTrigger value="exclude">Fee Exclusions</TabsTrigger>
-            <TabsTrigger value="exclude-rewards">Reward Exclusions</TabsTrigger>
+            <TabsTrigger value="metadata">Token Metadata</TabsTrigger>
           </TabsList>
           
           {/* Overview Tab */}
@@ -886,156 +814,7 @@ export function TokenManagement(): React.ReactElement {
             </div>
           </TabsContent>
           
-          {/* Fee Exclusions Tab */}
-          <TabsContent value="exclude" className="space-y-4 mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Fee Exclusion Management</CardTitle>
-                <CardDescription>
-                  Manage addresses that are excluded from paying transaction fees
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {!configInitialized ? (
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Token Not Initialized</AlertTitle>
-                    <AlertDescription>
-                      Please initialize the token configuration before managing fee exclusions.
-                    </AlertDescription>
-                  </Alert>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="excludeAddress">Exclude Address From Fees</Label>
-                      <div className="flex space-x-2">
-                        <Input
-                          id="excludeAddress"
-                          placeholder="Enter Solana address to exclude"
-                          value={excludeAddress}
-                          onChange={(e) => setExcludeAddress(e.target.value)}
-                          disabled={isLoading}
-                          className="flex-1"
-                        />
-                        <Button 
-                          onClick={excludeFromFees} 
-                          disabled={isLoading || !excludeAddress.trim()}
-                        >
-                          {isLoading ? (
-                            <span className="flex items-center">
-                              <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
-                              Adding...
-                            </span>
-                          ) : (
-                            <span>Add Address</span>
-                          )}
-                        </Button>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Addresses on this list will not pay transaction fees when transferring $7F tokens.
-                      </p>
-                    </div>
-
-                    <div className="mt-4">
-                      <h3 className="text-sm font-medium mb-2">Currently Excluded Addresses</h3>
-                      {excludedAddresses.length === 0 ? (
-                        <div className="text-center py-4 bg-muted/30 rounded-md">
-                          <p className="text-muted-foreground text-sm">No addresses are currently excluded from fees</p>
-                        </div>
-                      ) : (
-                        <div className="border rounded-md overflow-hidden">
-                          <div className="max-h-60 overflow-y-auto">
-                            {excludedAddresses.map((address, index) => (
-                              <div key={index} className="p-2 flex items-center justify-between border-b last:border-0 hover:bg-muted/20">
-                                <div className="font-mono text-xs overflow-hidden text-ellipsis">
-                                  {address}
-                                </div>
-                                <Badge variant="outline" className="ml-2 shrink-0">Excluded</Badge>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="pt-4">
-                      <Button
-                        onClick={refreshTokenStatus}
-                        variant="outline"
-                        className="w-full"
-                        disabled={isLoading}
-                      >
-                        <RefreshCcw className="h-4 w-4 mr-2" />
-                        Refresh Excluded Addresses
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          {/* Reward Exclusions Tab */}
-          <TabsContent value="exclude-rewards" className="space-y-4 mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Reward Exclusion Management</CardTitle>
-                <CardDescription>
-                  Manage addresses that are excluded from receiving reflection rewards
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-base font-medium mb-2">Exclude Address From Rewards</h3>
-                    <div className="flex space-x-2">
-                      <Input
-                        placeholder="Enter Solana address to exclude"
-                        value={excludeRewardsAddress}
-                        onChange={(e) => setExcludeRewardsAddress(e.target.value)}
-                        disabled={isLoading || !configInitialized}
-                      />
-                      <Button 
-                        onClick={excludeFromRewards}
-                        disabled={isLoading || !excludeRewardsAddress || !configInitialized}
-                      >
-                        Add Address
-                      </Button>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Addresses on this list will not receive reflection rewards when transfers occur.
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-base font-medium mb-2">Currently Excluded From Rewards</h3>
-                    <div className="space-y-2 max-h-60 overflow-y-auto border rounded-md p-2">
-                      {excludedFromRewardsAddresses.length > 0 ? (
-                        excludedFromRewardsAddresses.map((address, index) => (
-                          <div key={index} className="flex justify-between items-center p-2 bg-muted/30 rounded-md">
-                            <span className="font-mono text-xs truncate max-w-[80%]">{address}</span>
-                            <Badge variant="outline">No Rewards</Badge>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-sm text-muted-foreground p-2">No addresses are currently excluded from rewards.</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    onClick={refreshTokenStatus} 
-                    variant="outline" 
-                    className="w-full"
-                    disabled={isLoading}
-                  >
-                    <RefreshCcw className="h-4 w-4 mr-2" />
-                    Refresh Excluded Addresses
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {/* Content for exclusions tabs removed as they are no longer used */}
           
           {/* Initialize Tab */}
           <TabsContent value="initialize" className="space-y-4 mt-4">
@@ -1116,6 +895,70 @@ export function TokenManagement(): React.ReactElement {
                     )}
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          {/* Metadata Tab */}
+          <TabsContent value="metadata" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Token Metadata Management</CardTitle>
+                <CardDescription>
+                  Update your token's metadata on the blockchain
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="tokenName">Token Name</Label>
+                  <Input
+                    id="tokenName"
+                    placeholder="Enter token name"
+                    value={tokenName}
+                    onChange={(e) => setTokenName(e.target.value)}
+                    disabled={isLoading || !isAdmin || !connected}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="tokenSymbol">Token Symbol</Label>
+                  <Input
+                    id="tokenSymbol"
+                    placeholder="Enter token symbol"
+                    value={tokenSymbol}
+                    onChange={(e) => setTokenSymbol(e.target.value)}
+                    disabled={isLoading || !isAdmin || !connected}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="tokenImageUri">Token Image URI</Label>
+                  <Input
+                    id="tokenImageUri"
+                    placeholder="Enter URI to token image or metadata JSON"
+                    value={tokenImageUri}
+                    onChange={(e) => setTokenImageUri(e.target.value)}
+                    disabled={isLoading || !isAdmin || !connected}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    This should be a URL to your token's image or a JSON metadata file following the Metaplex standard
+                  </p>
+                </div>
+                
+                <Button
+                  onClick={updateTokenMetadataStep}
+                  disabled={isLoading || !isAdmin || !connected}
+                  className="w-full relative"
+                >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center">
+                      <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                      Updating Metadata...
+                    </span>
+                  ) : (
+                    'Update Token Metadata'
+                  )}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>

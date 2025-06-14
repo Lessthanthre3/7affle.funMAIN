@@ -41,19 +41,17 @@ export function InitializeUserStats() {
         [Buffer.from('user-stats'), publicKey.toBuffer()],
         program.programId
       );
-
-      // Use the raw rpc method to call the instruction directly
-      // @ts-ignore - Intentionally using the raw instruction name
-      const tx = await program.rpc.initializeUserStats({
-        accounts: {
-          userStats: userStatsPda,
-          user: publicKey,
-          systemProgram: SystemProgram.programId,
-          // In a production implementation, we would include:
-          // referrer: referrerPubkey (if available)
-        },
-        signers: []
-      });
+      
+      console.log('Initializing user stats with PDA:', userStatsPda.toBase58());
+      
+      // Use the direct approach to bypass TypeScript errors
+      // @ts-ignore - We need to use the raw method to match Rust's snake_case naming
+      const tx = await program.methods.initializeUserStats().accounts({
+        // Use snake_case to match the Rust program's account names
+        user_stats: userStatsPda,
+        user: publicKey,
+        systemProgram: SystemProgram.programId,
+      }).rpc();
 
       toast.success('User profile registered!')
       console.log('Transaction signature', tx)

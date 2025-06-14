@@ -1,0 +1,26 @@
+{
+  "name": "7affle-telegram-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot to monitor and announce new 7affle raffles on Solana",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.28.0",
+    "@solana/web3.js": "^1.77.0",
+    "axios": "^1.9.0",
+    "cheerio": "^1.1.0",
+    "dotenv": "^16.3.1",
+    "node-telegram-bot-api": "^0.61.0",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@types/node-telegram-bot-api": "^0.61.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
