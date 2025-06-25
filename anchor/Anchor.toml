@@ -19,7 +19,7 @@ basic = "GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "mainnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

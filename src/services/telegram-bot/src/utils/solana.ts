@@ -8,9 +8,9 @@ import { IDL } from '../idl/raffle_idl';
 dotenv.config();
 
 // Get Solana configuration from environment variables
-const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
 const programId = process.env.RAFFLE_PROGRAM_ID;
-const network = process.env.SOLANA_NETWORK || 'devnet';
+const network = process.env.SOLANA_NETWORK || 'mainnet-beta';
 
 if (!programId) {
   throw new Error('RAFFLE_PROGRAM_ID is required in .env file');
