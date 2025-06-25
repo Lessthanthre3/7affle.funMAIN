@@ -120,10 +120,6 @@ export function InformationPage() {
                 <div className="flex flex-col items-center">
                   <span className="text-gray-400 mb-1">Address: GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE</span>
                 </div>
-                <div className="flex items-center justify-center">
-                  <span className="text-gray-400 mr-2">Solana Explorer:</span>
-                  <a href="https://explorer.solana.com/address/GUXx1x2kMBxJwLmyxWJMaWAqMhJHx7zabDqHdv7AFFLE" className="text-purple-300 hover:text-purple-200 underline">View on Explorer</a>
-                </div>
               </div>
             </div>
             
@@ -133,10 +129,6 @@ export function InformationPage() {
                 <div className="flex items-center justify-center">
                   <span className="text-gray-400 mr-2">Token Address:</span>
                   <span className="text-purple-300 font-mono">Coming Soon</span>
-                </div>
-                <div className="flex items-center justify-center">
-                  <span className="text-gray-400 mr-2">Solana Explorer:</span>
-                  <span className="text-purple-300">Coming Soon</span>
                 </div>
               </div>
             </div>
@@ -199,6 +191,86 @@ export function InformationPage() {
                 7affle charges a 5% platform fee on all raffles. This fee is automatically deducted when 
                 prizes are distributed. The fee helps maintain the platform, develop new features, and ensure 
                 the long-term sustainability of the service.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-6" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">How do I get started if I'm new to Web3?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-left px-4">
+                <div className="space-y-4">
+                  <p>
+                    If you're new to Web3 and Solana, follow these steps to get started with 7affle:
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-purple-300 font-medium">1. Install Phantom Wallet</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Visit <a href="https://phantom.app" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">phantom.app</a> on your desktop browser</li>
+                      <li>Click "Add to browser" and follow the installation instructions</li>
+                      <li>For mobile users, download the Phantom app from the App Store or Google Play</li>
+                      <li>Create a new wallet and securely store your recovery phrase (never share this with anyone!)</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-purple-300 font-medium">2. Add funds to your wallet</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Open your Phantom wallet and click the "Deposit" button</li>
+                      <li>You can purchase SOL directly within Phantom using a credit/debit card</li>
+                      <li>Alternatively, you can transfer SOL from an exchange like Coinbase, Binance, or FTX</li>
+                      <li>For exchanges, copy your wallet address from Phantom and use it as the withdrawal address</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-purple-300 font-medium">3. Connect to 7affle.fun</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>On 7affle.fun, click the "Connect Wallet" button in the top right corner</li>
+                      <li>Select Phantom from the list of wallet options</li>
+                      <li>Approve the connection request in your Phantom wallet</li>
+                      <li>You're now connected and ready to participate in raffles!</li>
+                    </ul>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-7" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">How do I buy tickets for a raffle?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-left px-4">
+                <div className="space-y-4">
+                  <p>
+                    Once you've connected your wallet to 7affle.fun, buying tickets is easy:
+                  </p>
+                  
+                  <ol className="list-decimal pl-5 space-y-2">
+                    <li>Browse the active raffles on the homepage</li>
+                    <li>Click on a raffle you're interested in to view details</li>
+                    <li>Click the "Buy Ticket" button</li>
+                    <li>Select the number of tickets you want to purchase</li>
+                    <li>Confirm the transaction in your Phantom wallet when prompted</li>
+                    <li>Wait for the transaction to be confirmed on the blockchain</li>
+                    <li>Your tickets will appear in the "My Tickets" section</li>
+                  </ol>
+                  
+                  <p className="text-yellow-300 text-sm">
+                    Note: Make sure you have enough SOL in your wallet to cover the ticket price plus a small transaction fee.
+                  </p>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-8" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">What is SOL and why do I need it?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-center">
+                SOL is the native cryptocurrency of the Solana blockchain. You need SOL to participate in raffles on 7affle.fun and to pay for transaction fees on the Solana network. Think of SOL as the digital currency that powers all activities on the platform, similar to how you would need traditional currency to enter a physical raffle.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-9" className="border border-purple-500/20 rounded-lg bg-purple-900/10 px-4">
+              <AccordionTrigger className="text-white hover:text-purple-300 justify-center">Is my wallet and personal information safe?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 text-center">
+                7affle.fun never asks or stores any of your private information. We only interact with your wallet through approved transactions that you must manually confirm. Your personal information remains private, and all transactions occur directly on the Solana blockchain. Always practice good security habits: never share your recovery phrase, be cautious of phishing attempts, and disconnect your wallet when not using the site.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

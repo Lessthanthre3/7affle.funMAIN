@@ -16,12 +16,10 @@ const links = [
 
 const LazyBasic = lazy(() => import('@/basic/basic-feature'))
 const LazyDashboard = lazy(() => import('@/components/dashboard/dashboard-feature'))
-const LazyTokenInfo = lazy(() => import('@/components/token/token-info').then(m => ({ default: m.TokenInfo })))
 
 const routes: RouteObject[] = [
   { index: true, element: <LazyBasic /> },
   { path: 'dashboard', element: <LazyDashboard /> },
-  { path: 'token', element: <LazyTokenInfo /> },
 ]
 
 console.log({ links, routes })
@@ -33,6 +31,7 @@ export function App() {
   // Determine if we should apply the wallet initialization guard
   // Only apply it for specific routes that require wallet initialization
   const needsWalletGuard = pathname !== '/' && pathname !== '/dashboard'
+  // Note: Token route has been removed as part of the seven-token program cleanup
   
   const content = (
     <AppLayout links={links}>

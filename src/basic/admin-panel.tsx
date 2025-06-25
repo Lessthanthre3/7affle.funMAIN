@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { RaffleData, useBasicProgram } from './basic-data-access'
 import { getBasicProgramId } from '@project/anchor'
 import { useAnchorProvider } from '@/components/solana/use-anchor-provider'
@@ -11,8 +11,7 @@ import { PublicKey } from '@solana/web3.js'
 import { ellipsify } from '@/lib/utils'
 import { toast } from 'sonner'
 import { LeaderboardAdmin } from './leaderboard-admin'
-import { TokenManagement } from './token-management'
-import { LayoutGrid, Coins, List } from 'lucide-react'
+import { LayoutGrid, List } from 'lucide-react'
 
 // Admin-only component for managing raffles
 export function AdminPanel() {
@@ -23,8 +22,10 @@ export function AdminPanel() {
   const { publicKey } = useWallet()
   const [raffles, setRaffles] = useState<RaffleData[]>([])
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'completed' | 'ended'>('all')
-  const [activeSection, setActiveSection] = useState('raffles') // Options: 'raffles', 'leaderboard', 'token'
+  const [activeSection, setActiveSection] = useState('raffles') // Options: 'raffles', 'leaderboard'
   const [isInitializingCounter, setIsInitializingCounter] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const rafflesPerPage = 5
   
   // Only admin can access this panel
   const isAdmin = publicKey?.toString() === 'GrDWUZZpCsxXR8qnZXREmE3bDgkQxLG6BHve3NLPbHFR' ||
@@ -50,6 +51,8 @@ export function AdminPanel() {
     }
     
     setRaffles(filteredRaffles)
+    // Reset to first page when filter changes
+    setCurrentPage(1)
   }, [activeRaffles, selectedFilter, isAdmin])
   
   // Handler for canceling a raffle with no tickets
@@ -132,30 +135,22 @@ export function AdminPanel() {
       <h1 className="text-3xl font-bold text-white mb-6">Admin Panel</h1>
       
       {/* Navigation Tabs */}
-      <div className="flex mb-6 space-x-2">
+      <div className="flex space-x-2 mb-6">
         <Button 
-          variant={activeSection === 'raffles' ? 'default' : 'outline'} 
+          variant={activeSection === 'raffles' ? "default" : "outline"}
           onClick={() => setActiveSection('raffles')}
-          className="flex items-center gap-2"
+          className="flex items-center"
         >
-          <LayoutGrid className="h-4 w-4" />
+          <LayoutGrid className="h-4 w-4 mr-2" />
           Raffles
         </Button>
         <Button 
-          variant={activeSection === 'leaderboard' ? 'default' : 'outline'} 
+          variant={activeSection === 'leaderboard' ? "default" : "outline"}
           onClick={() => setActiveSection('leaderboard')}
-          className="flex items-center gap-2"
+          className="flex items-center"
         >
-          <List className="h-4 w-4" />
+          <List className="h-4 w-4 mr-2" />
           Leaderboard
-        </Button>
-        <Button 
-          variant={activeSection === 'token' ? 'default' : 'outline'} 
-          onClick={() => setActiveSection('token')}
-          className="flex items-center gap-2"
-        >
-          <Coins className="h-4 w-4" />
-          $7F Token
         </Button>
       </div>
 
@@ -189,7 +184,9 @@ export function AdminPanel() {
                   </tr>
                 </thead>
                 <tbody>
-                  {raffles.map((raffle, index) => {
+                  {raffles
+                    .slice((currentPage - 1) * rafflesPerPage, currentPage * rafflesPerPage)
+                    .map((raffle, index) => {
                     const now = Date.now()
                     const isEnded = now > raffle.endTimestamp && raffle.isActive
                     const isSoldOut = raffle.totalTickets === raffle.maxTickets
@@ -310,6 +307,34 @@ export function AdminPanel() {
                   })}
                 </tbody>
               </table>
+              
+              {/* Pagination Controls */}
+              <div className="flex justify-between items-center mt-4 px-4">
+                <div className="text-sm text-gray-400">
+                  Showing {Math.min((currentPage - 1) * rafflesPerPage + 1, raffles.length)} to {Math.min(currentPage * rafflesPerPage, raffles.length)} of {raffles.length} raffles
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="bg-purple-700 hover:bg-purple-800 text-white text-xs"
+                    size="sm"
+                  >
+                    Previous
+                  </Button>
+                  <div className="flex items-center px-2 text-white">
+                    Page {currentPage} of {Math.ceil(raffles.length / rafflesPerPage) || 1}
+                  </div>
+                  <Button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(raffles.length / rafflesPerPage)))}
+                    disabled={currentPage >= Math.ceil(raffles.length / rafflesPerPage)}
+                    className="bg-purple-700 hover:bg-purple-800 text-white text-xs"
+                    size="sm"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -317,9 +342,6 @@ export function AdminPanel() {
       
       {/* Leaderboard Admin Section */}
       {activeSection === 'leaderboard' && <LeaderboardAdmin />}
-      
-      {/* Token Management Section */}
-      {activeSection === 'token' && <TokenManagement />}
     </div>
   )
 }

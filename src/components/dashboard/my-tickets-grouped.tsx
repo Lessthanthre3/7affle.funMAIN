@@ -119,10 +119,15 @@ export function MyTicketsGrouped() {
                         </span>
                       )}
                     </div>
-                    <div className="mt-1 text-sm text-gray-400">
-                      <span>Raffle ID: {raffleData?.raffleId || '—'}</span>
-                      <span className="mx-2">•</span>
-                      <span>{tickets.length} {tickets.length === 1 ? 'Ticket' : 'Tickets'}</span>
+                    <div className="mt-2 flex items-center space-x-3">
+                      <div className="bg-purple-900/30 border border-purple-500/30 rounded-md px-3 py-1">
+                        <span className="text-xs text-purple-300 font-medium">Raffle ID: </span>
+                        <span className="text-xs text-green-400 font-bold">{raffleData?.raffleId || '—'}</span>
+                      </div>
+                      <div className="bg-green-900/20 border border-green-500/30 rounded-md px-3 py-1">
+                        <span className="text-xs text-green-300 font-medium">{tickets.length} </span>
+                        <span className="text-xs text-purple-300">{tickets.length === 1 ? 'Ticket' : 'Tickets'}</span>
+                      </div>
                     </div>
                   </div>
                   

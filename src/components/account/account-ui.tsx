@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
 import { RefreshCw } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 
 import { useCluster } from '../cluster/cluster-data-access'
 import { ExplorerLink } from '../cluster/cluster-ui'
@@ -15,11 +15,11 @@ import {
 } from './account-data-access'
 import { ellipsify } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { AppAlert } from '@/components/app-alert'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { AppModal } from '@/components/app-modal'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { addConnectionError } from '@/components/admin-debug-console'
 
 export function AccountBalance({ address }: { address: PublicKey }) {
   const query = useGetBalance({ address })
@@ -41,24 +41,23 @@ export function AccountChecker() {
 
 export function AccountBalanceCheck({ address }: { address: PublicKey }) {
   const { cluster } = useCluster()
-  const mutation = useRequestAirdrop({ address })
   const query = useGetBalance({ address })
+
+  useEffect(() => {
+    if (query.isError || (!query.isLoading && !query.data)) {
+      addConnectionError(
+        cluster.name, 
+        `Account ${address.toString().slice(0, 4)}...${address.toString().slice(-4)} not found on cluster ${cluster.name}.`,
+        'account'
+      )
+    }
+  }, [query.isError, query.isLoading, query.data, cluster.name, address])
 
   if (query.isLoading) {
     return null
   }
   if (query.isError || !query.data) {
-    return (
-      <AppAlert
-        action={
-          <Button variant="outline" onClick={() => mutation.mutateAsync(1).catch((err) => console.log(err))}>
-            Request Airdrop
-          </Button>
-        }
-      >
-        You are connected to <strong>{cluster.name}</strong> but your account is not found on this cluster.
-      </AppAlert>
-    )
+    return null
   }
   return null
 }

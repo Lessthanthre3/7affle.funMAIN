@@ -39,8 +39,8 @@ export const defaultClusters: SolanaCluster[] = [
   },
 ]
 
-// Changed default from local (index 0) to devnet (index 1)
-const clusterAtom = atomWithStorage<SolanaCluster>('solana-cluster', defaultClusters[1])
+// Changed default from devnet (index 1) to mainnet-beta (index 3)
+const clusterAtom = atomWithStorage<SolanaCluster>('solana-cluster', defaultClusters[3])
 const clustersAtom = atomWithStorage<SolanaCluster[]>('solana-clusters', defaultClusters)
 
 const activeClustersAtom = atom<SolanaCluster[]>((get) => {

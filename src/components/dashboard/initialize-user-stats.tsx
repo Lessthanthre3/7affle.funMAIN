@@ -72,7 +72,10 @@ export function InitializeUserStats() {
       <div className="text-center">
         <h3 className="text-2xl font-bold text-white mb-2">Welcome to 7affle!</h3>
         <p className="text-gray-300 text-lg">
-          One-time registration required to participate in raffles
+          One-time registration required to participate in raffles!
+        </p>
+        <p className="text-gray-300 text-lg">
+          Please note that registration is not open yet, please check Telegram for updates!
         </p>
       </div>
       
@@ -129,7 +132,7 @@ export function InitializeUserStats() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-gray-300">Creates a Solana account that requires a small amount of SOL for rent (~0.002 SOL)</p>
+              <p className="text-gray-300">Creates a Solana account that requires a small amount of SOL for rent (~0.0001 SOL)</p>
             </div>
             
             <div className="flex items-start gap-3">

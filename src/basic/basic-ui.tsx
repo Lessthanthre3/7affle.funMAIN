@@ -475,7 +475,7 @@ export function RafflesList() {
           </div>
           <h3 className="text-xl font-bold text-white mb-2">No Raffles Found</h3>
           <p className="text-gray-400 max-w-md mx-auto">No active raffles are currently available.</p>
-          <p className="text-sm text-purple-400 mt-4">Create a new raffle to get started!</p>
+          <p className="text-sm text-purple-400 mt-4">7affle.fun will launch soon!</p>
         </div>
       ) : (
         <>

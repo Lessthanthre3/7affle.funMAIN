@@ -1,5 +1,5 @@
 /**
- * Environment configuration for 7affle token development
+ * Environment configuration for 7affle development
  * This provides consistent access to environment variables across different deployment stages
  */
 
@@ -7,9 +7,6 @@
 type Environment = 'local' | 'devnet' | 'mainnet';
 
 // No default needed as we set it in ENVIRONMENT
-
-// Import the token mint address from token exports
-import { SEVEN_TOKEN_MINT_ADDRESS } from '../../token/seven-token/utils/token-exports';
 
 // Determine the current environment
 const ENVIRONMENT: Environment = 
@@ -24,19 +21,7 @@ const RPC_ENDPOINTS = {
   mainnet: 'https://api.mainnet-beta.solana.com',
 };
 
-// Program IDs
-const TOKEN_PROGRAM_IDS = {
-  local: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', // Same across all environments
-  devnet: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-  mainnet: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-};
-
-// Token Mint Addresses - use the imported SEVEN_TOKEN_MINT_ADDRESS for consistency
-const TOKEN_MINT_ADDRESSES = {
-  local: SEVEN_TOKEN_MINT_ADDRESS.toString(),
-  devnet: SEVEN_TOKEN_MINT_ADDRESS.toString(),
-  mainnet: SEVEN_TOKEN_MINT_ADDRESS.toString(),
-};
+// No token program IDs needed anymore as we've removed the token functionality
 
 // Wallet addresses
 const TREASURY_WALLET_ADDRESSES = {
@@ -57,11 +42,6 @@ export const ENV = {
   isDevnet: ENVIRONMENT === 'devnet',
   isMainnet: ENVIRONMENT === 'mainnet',
   rpcEndpoint: process.env.REACT_APP_SOLANA_RPC || RPC_ENDPOINTS[ENVIRONMENT],
-  tokenProgramId: TOKEN_PROGRAM_IDS[ENVIRONMENT],
   raffleProgramId: RAFFLE_PROGRAM_IDS[ENVIRONMENT],
-  tokenMintAddress: TOKEN_MINT_ADDRESSES[ENVIRONMENT],
   treasuryWalletAddress: TREASURY_WALLET_ADDRESSES[ENVIRONMENT],
-  tokenName: '$7F Token',
-  tokenSymbol: '$7F',
-  tokenDecimals: 6,
 };
