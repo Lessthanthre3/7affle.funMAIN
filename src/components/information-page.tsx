@@ -128,7 +128,7 @@ export function InformationPage() {
               <div className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center">
                   <span className="text-gray-400 mr-2">Token Address:</span>
-                  <span className="text-purple-300 font-mono">Coming Soon</span>
+                  <span className="text-purple-300 font-mono">5YE7bE2beyf7pAxyYqLYECQFWTGbDnFBsJ81eGFqpump</span>
                 </div>
               </div>
             </div>

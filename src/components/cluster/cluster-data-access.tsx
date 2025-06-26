@@ -1,3 +1,5 @@
+// Cluster configuration for 7affle Platform
+// Cache buster: 2025-01-26-01:13 - Force deployment update
 import { clusterApiUrl, Connection } from '@solana/web3.js'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
@@ -34,7 +36,7 @@ export const defaultClusters: SolanaCluster[] = [
   },
   {
     name: 'mainnet-beta',
-    endpoint: import.meta.env.VITE_MAINNET_RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=cf67b0f6-b113-4de7-859a-a7822710cda1',
+    endpoint: 'https://mainnet.helius-rpc.com/?api-key=cf67b0f6-b113-4de7-859a-a7822710cda1',
     network: ClusterNetwork.Mainnet,
   },
 ]
