@@ -80,7 +80,7 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
               <img src={telegramImg} alt="Telegram" className="h-5 w-5" />
             </a>
             <a 
-              href="#" /* Replace with actual Dexscreener URL when available */
+              href="https://dexscreener.com/solana/5YE7bE2beyf7pAxyYqLYECQFWTGbDnFBsJ81eGFqpump"
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center p-1 rounded-full bg-purple-800/50 hover:bg-purple-700/70 transition-colors"
@@ -124,7 +124,7 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
                   <span>Telegram</span>
                 </a>
                 <a 
-                  href="#" /* Replace with actual Dexscreener URL when available */
+                  href="https://dexscreener.com/solana/5YE7bE2beyf7pAxyYqLYECQFWTGbDnFBsJ81eGFqpump"
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 py-1 px-3 rounded-full bg-purple-800/50 hover:bg-purple-700/70 transition-colors"
