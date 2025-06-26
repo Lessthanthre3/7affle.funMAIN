@@ -71,11 +71,8 @@ export function InitializeUserStats() {
     <div className="p-6 space-y-4 bg-black/20 backdrop-blur-sm border border-purple-500/20 rounded-lg">
       <div className="text-center">
         <h3 className="text-2xl font-bold text-white mb-2">Welcome to 7affle!</h3>
-        <p className="text-gray-300 text-lg">
+        <p className="text-gray-200 text-xl mb-2">
           One-time registration required to participate in raffles!
-        </p>
-        <p className="text-gray-300 text-lg">
-          Please note that registration is not open yet, please check Telegram for updates!
         </p>
       </div>
       
