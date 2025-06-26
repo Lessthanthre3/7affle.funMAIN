@@ -34,7 +34,7 @@ export const defaultClusters: SolanaCluster[] = [
   },
   {
     name: 'mainnet-beta',
-    endpoint: import.meta.env.VITE_MAINNET_RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=demo',
+    endpoint: import.meta.env.VITE_MAINNET_RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=cf67b0f6-b113-4de7-859a-a7822710cda1',
     network: ClusterNetwork.Mainnet,
   },
 ]
