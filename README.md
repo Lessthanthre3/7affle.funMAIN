@@ -1,5 +1,7 @@
 # 7affle - Solana Raffle Platform
 
+*Last updated: 2025-01-26 - Mainnet Launch Ready! 🚀*
+
 ## Overview
 
 7affle is a decentralized raffle platform built on the Solana blockchain. It allows users to create raffles, purchase tickets, and win prizes in a transparent and trustless manner. The platform includes an admin panel for raffle management and a user-friendly interface for participants.
